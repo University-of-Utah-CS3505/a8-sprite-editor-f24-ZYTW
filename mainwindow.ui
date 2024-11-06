@@ -28,7 +28,7 @@
     </property>
     <property name="icon">
      <iconset resource="resources.qrc">
-      <normaloff>:/icons/pencil_selected.png</normaloff>:/icons/pencil_selected.png</iconset>
+      <normaloff>:/icons/icon_pencil.png</normaloff>:/icons/icon_pencil.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -51,7 +51,7 @@
     </property>
     <property name="icon">
      <iconset resource="resources.qrc">
-      <normaloff>:/icons/eraser_selected.png</normaloff>:/icons/eraser_selected.png</iconset>
+      <normaloff>:/icons/icon_eraser.png</normaloff>:/icons/icon_eraser.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -74,7 +74,7 @@
     </property>
     <property name="icon">
      <iconset resource="resources.qrc">
-      <normaloff>:/icons/pallete_selected.png</normaloff>:/icons/pallete_selected.png</iconset>
+      <normaloff>:/icons/icon_pallete.png</normaloff>:/icons/icon_pallete.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -97,7 +97,7 @@
     </property>
     <property name="icon">
      <iconset resource="resources.qrc">
-      <normaloff>:/icons/shapes_selected.png</normaloff>:/icons/shapes_selected.png</iconset>
+      <normaloff>:/icons/icon_shapes.png</normaloff>:/icons/icon_shapes.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -120,7 +120,7 @@
     </property>
     <property name="icon">
      <iconset resource="resources.qrc">
-      <normaloff>:/icons/parallel_selected.png</normaloff>:/icons/parallel_selected.png</iconset>
+      <normaloff>:/icons/icon_parallel.png</normaloff>:/icons/icon_parallel.png</iconset>
     </property>
     <property name="iconSize">
      <size>
