@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>eraser_default.png</file>
+        <file>pallete_default.png</file>
+        <file>parallel_default.png</file>
+        <file>pencil_default.png</file>
+        <file>shapes_default.png</file>
+    </qresource>
+</RCC>
