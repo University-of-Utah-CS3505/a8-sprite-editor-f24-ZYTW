@@ -8,8 +8,14 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    Canvas *canvas = new Canvas(800, 600, this);
-    setCentralWidget(canvas);
+    canvas = new Canvas(this);
+
+    if (!ui->canvas->layout()) {
+        QVBoxLayout *layout = new QVBoxLayout(ui->canvas);
+        ui->canvas->setLayout(layout);
+    }
+
+    ui->canvas->layout()->addWidget(canvas);
 }
 
 MainWindow::~MainWindow()

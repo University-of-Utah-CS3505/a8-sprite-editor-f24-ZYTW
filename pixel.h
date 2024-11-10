@@ -7,11 +7,11 @@ class Pixel
 {
 public:
     Pixel(QColor color = QColor(Qt::white));
-    void setColor(QColor newColor);
+    void setColor(QColor color);
     QColor getColor() const;
 
 private:
-    QColor color;
+    QColor color;    
 };
 
 #endif // PIXEL_H
