@@ -10,6 +10,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     canvas = new Canvas(this);
 
+    // revise required
+    // temporary canvas layout
     if (!ui->canvas->layout()) {
         QVBoxLayout *layout = new QVBoxLayout(ui->canvas);
         ui->canvas->setLayout(layout);
