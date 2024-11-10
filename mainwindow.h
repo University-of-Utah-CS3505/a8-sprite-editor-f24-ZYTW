@@ -18,8 +18,14 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+private slots:
+    void canvasSizeConfirmation();
+
 private:
     Ui::MainWindow *ui;
     Canvas *canvas;
+
+    void setUpConnections();
+    void updateCanvasSizeLabel();
 };
 #endif // MAINWINDOW_H
