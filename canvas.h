@@ -1,10 +1,25 @@
 #ifndef CANVAS_H
 #define CANVAS_H
 
-#include <QWidget>
-#include <vector>
 #include <QColor>
+#include <QColorDialog>
+#include <QWidget>
+#include <QVector>
+#include <vector>
+#include <QMouseEvent>
+#include <QPainter>
+#include <QPoint>
+#include <QImage>
+
+#include <QFile>
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QFileDialog>
+#include <QDebug>
+
 #include "Pixel.h"
+
 
 class Canvas : public QWidget
 {
@@ -12,12 +27,22 @@ class Canvas : public QWidget
 public:
     Canvas(QWidget *parent = nullptr);
 
-    int getCanvasSize() const;
+
+    QVector<QImage> getFrames();
+    QImage getCanvasImage() const;
+
+    void eraseWithPen(const QPoint& start, const QPoint& end, int width);
+    void drawWithPen(const QPoint& start, const QPoint& end, const QColor& color, int width);
 
 signals:
+    void updateCanvasDisplay(QPixmap);
 
 public slots:
     void setCanvasSize(int size);
+    void setFramesPerSecond(int fps);
+    void setPenColor(QColor color);
+    void openFile();
+    void saveFile();
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -26,11 +51,16 @@ protected:
 
 private:
     int canvasSize;
+    int penSize;
+    int framesPerSecond;
     std::vector<std::vector<Pixel>> pixels;
-    QColor currentColor;
 
     void initializePixels();
     void drawPosition(int x, int y);
+    QVector<QImage> frames;
+    QColor penColor;
+    QImage currentImage;
+    QPoint currentPoint;
 };
 
 #endif // CANVAS_H

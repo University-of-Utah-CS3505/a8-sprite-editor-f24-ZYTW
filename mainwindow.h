@@ -2,7 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "Canvas.h"
+#include <QMessageBox>
+#include <canvas.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -18,14 +19,29 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-private slots:
-    void canvasSizeConfirmation();
+     QImage getCanvasImage() const;
+
+public slots:
+    // Connecting spot for all connections between slots and signals
+    void setUpConnections();
+
+    // Popup on first screen to set canvasSize
+    void canvasSizeDialog();
+    void updateCanvasDisplay(QPixmap pixmap);
+
+    // Change FPS Speed based on the users' selection
+    void updateFPS();
+
+    // display Color Dialog to change the penColor user has selected
+    void showColorDialog();
+
+signals:
+    void setPenColor(QColor color);
 
 private:
     Ui::MainWindow *ui;
     Canvas *canvas;
-
-    void setUpConnections();
-    void updateCanvasSizeLabel();
+    QPoint lastPoint;
+    QColorDialog colorDialog;
 };
 #endif // MAINWINDOW_H

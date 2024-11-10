@@ -11,7 +11,7 @@ public:
     QColor getColor() const;
 
 private:
-    QColor color;    
+    QColor color;
 };
 
 #endif // PIXEL_H
