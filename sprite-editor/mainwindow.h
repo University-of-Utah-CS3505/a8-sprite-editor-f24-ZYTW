@@ -6,7 +6,7 @@
 #include <canvas.h>
 #include "Pen.h"
 #include "Eraser.h"
-#include "colorpalette.h"
+#include "Colorpalette.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {

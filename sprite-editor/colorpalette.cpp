@@ -1,4 +1,4 @@
-#include "colorpalette.h"
+#include "Colorpalette.h"
 
 ColorPalette::ColorPalette(QWidget *parent) : QWidget(parent), currentColor(Qt::black) {
     connect(&colorDialog, &QColorDialog::colorSelected, this, &ColorPalette::setColor);
