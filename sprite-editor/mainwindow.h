@@ -4,6 +4,9 @@
 #include <QMainWindow>
 #include <QMessageBox>
 #include <canvas.h>
+#include "Pen.h"
+#include "Eraser.h"
+#include "colorpalette.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -21,6 +24,12 @@ public:
 
      QImage getCanvasImage() const;
 
+private slots:
+    void selectPenTool();
+    void selectEraserTool();
+    void selectPaletteTool();
+    void setPenColor(QColor color);
+
 public slots:
     // Connecting spot for all connections between slots and signals
     void setUpConnections();
@@ -32,16 +41,17 @@ public slots:
     // Change FPS Speed based on the users' selection
     void updateFPS();
 
-    // display Color Dialog to change the penColor user has selected
-    void showColorDialog();
-
-signals:
-    void setPenColor(QColor color);
-
 private:
     Ui::MainWindow *ui;
     Canvas *canvas;
     QPoint lastPoint;
     QColorDialog colorDialog;
+
+    Tool* currentTool;
+    Pen* penTool;
+    Eraser* eraserTool;
+    ColorPalette* colorPalette;
+
+    void updateCanvasTool();
 };
 #endif // MAINWINDOW_H

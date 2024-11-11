@@ -5,8 +5,14 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
     , canvas(new Canvas(this))
+    , colorPalette(new ColorPalette(this))
 {
     ui->setupUi(this);
+
+    penTool = new Pen(Qt::black);
+    eraserTool = new Eraser(Qt::white);
+
+    currentTool = penTool;
 
     if (!ui->canvas->layout()) {
         QVBoxLayout *layout = new QVBoxLayout(ui->canvas);
@@ -15,6 +21,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->canvas->layout()->addWidget(canvas);
 
+    canvas->setTool(currentTool);
+
     setUpConnections();
     updateCanvasDisplay(QPixmap::fromImage(canvas->getCanvasImage().scaled(400,400)));
 }
@@ -22,6 +30,9 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete penTool;
+    delete eraserTool;
+    delete colorPalette;
 }
 
 void MainWindow::setUpConnections()
@@ -32,23 +43,27 @@ void MainWindow::setUpConnections()
     connect(ui->saveButton, &QPushButton::clicked, canvas , &Canvas::saveFile);
     connect(ui->openButton, &QPushButton::clicked, canvas , &Canvas::openFile);
 
-    connect(ui->colorButton, &QPushButton::clicked, this, &MainWindow::showColorDialog);
+    // Tool buttons
+    connect(ui->penButton, &QPushButton::clicked, this, &MainWindow::selectPenTool);
+    connect(ui->eraserButton, &QPushButton::clicked, this, &MainWindow::selectEraserTool);
+    connect(ui->colorButton, &QPushButton::clicked, this, &MainWindow::selectPaletteTool);
     connect(this, &MainWindow::setPenColor, canvas, &Canvas::setPenColor);
 
     connect(canvas, &Canvas::updateCanvasDisplay, this, &MainWindow::updateCanvasDisplay);
+
+    connect(colorPalette, &ColorPalette::colorSelected, this, &MainWindow::setPenColor);
 }
 
-void MainWindow::canvasSizeDialog()
-{
+void MainWindow::canvasSizeDialog() {
     bool ok;
     int userCanvasSize = ui->inputCanvasSize->text().toInt(&ok);
 
-    if (ok && userCanvasSize >= 1 && userCanvasSize <= 60) {
+    if (ok && userCanvasSize >= 1 && userCanvasSize <= 64) {
         canvas->setCanvasSize(userCanvasSize);
-        QString labelSize = QString::number(userCanvasSize) + " x " + QString::number(userCanvasSize);
+        QString labelSize = QString::number(userCanvasSize * 10) + " x " + QString::number(userCanvasSize * 10);
         ui->labelCanvasSize->setText("Canvas Size: " + labelSize);
-        updateCanvasDisplay(QPixmap::fromImage(canvas->getCanvasImage().scaled(400,400)));
 
+        updateCanvasDisplay(QPixmap::fromImage(canvas->getCanvasImage().scaled(400, 400)));
         ui->canvasDialog->hide();
         setEnabled(true);
     } else {
@@ -68,13 +83,28 @@ void MainWindow::updateFPS()
     ui->labelFps->setText("FPS: " + QString::number(ui->slider_fps->value()));
 }
 
-void MainWindow::showColorDialog()
+void MainWindow::selectPaletteTool()
 {
-    QColor selectedColor = colorDialog.getColor();
-
-    if (selectedColor.isValid()) {
-        emit setPenColor(selectedColor);
-        ui->labelColor->setStyleSheet(QString("background-color: %1").arg(selectedColor.name()));
-    }
+    colorPalette->openColorDialog();
 }
 
+void MainWindow::setPenColor(QColor color) {
+    penTool->setColor(color);
+    ui->labelColor->setStyleSheet(QString("background-color: %1").arg(color.name()));
+}
+
+void MainWindow::selectPenTool() {
+    currentTool = penTool;
+    updateCanvasTool();
+}
+
+void MainWindow::selectEraserTool() {
+    currentTool = eraserTool;
+    updateCanvasTool();
+}
+
+void MainWindow::updateCanvasTool() {
+    if (canvas) {
+        canvas->setTool(currentTool);
+    }
+}

@@ -1,37 +1,42 @@
 #include "canvas.h"
+#include <QPainter>
+#include <QMouseEvent>
 
-Canvas::Canvas(QWidget *parent): QWidget(parent)
+Canvas::Canvas(QWidget *parent): QWidget(parent), currentTool(nullptr)
 {
     canvasSize = 30;
-    currentImage = QPixmap(canvasSize,canvasSize).toImage();
-    currentImage.fill(QColor("#ffffff"));
     penSize = 3;
     framesPerSecond = 24;
-    initializePixels();
     penColor = Qt::black;
-    setFixedSize(canvasSize*10, canvasSize*10);
+    setFixedSize(canvasSize * 10, canvasSize * 10);
+
+    initializePixels();
 }
 
 void Canvas::initializePixels() {
     pixels = std::vector<std::vector<Pixel>>(canvasSize, std::vector<Pixel>(canvasSize, Pixel(Qt::white)));
 }
 
-QImage Canvas::getCanvasImage() const {
-    return currentImage;
+void Canvas::setTool(Tool* tool) {
+    currentTool = tool;
 }
 
-void Canvas::setCanvasSize(int size)
-{
-    canvasSize = size;
-    setFixedSize(canvasSize*10, canvasSize*10);
-    initializePixels();
-    currentImage = QPixmap(canvasSize,canvasSize).toImage();
-    currentImage.fill(QColor("#ffffff"));
-    update();
-    if (!frames.isEmpty()) {
-        frames.removeFirst();
+QImage Canvas::getCanvasImage() const {
+    QImage image(canvasSize, canvasSize, QImage::Format_ARGB32);
+
+    for (int i = 0; i < canvasSize; ++i) {
+        for (int j = 0; j < canvasSize; ++j) {
+            image.setPixelColor(i, j, pixels[i][j].getColor());
+        }
     }
-    frames.push_back(currentImage);
+    return image;
+}
+
+void Canvas::setCanvasSize(int size) {
+    canvasSize = size;
+    setFixedSize(canvasSize * 10, canvasSize * 10);
+    initializePixels();
+    update();
 }
 
 void Canvas::setFramesPerSecond(int fps)
@@ -39,16 +44,14 @@ void Canvas::setFramesPerSecond(int fps)
     framesPerSecond = fps;
 }
 
-void Canvas::setPenColor(QColor color)
-{
-    penColor = color;
+void Canvas::setPenColor(QColor color) {
+    if (currentTool) {
+        currentTool->setColor(color);
+    }
 }
 
-// draw each Pixels
 void Canvas::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
-    painter.fillRect(this->rect(), Qt::black);
-
     for (int i = 0; i < pixels.size(); ++i) {
         for (int j = 0; j < pixels[i].size(); ++j) {
             painter.setBrush(pixels[i][j].getColor());
@@ -58,21 +61,24 @@ void Canvas::paintEvent(QPaintEvent *event) {
 }
 
 void Canvas::mousePressEvent(QMouseEvent *event) {
-    drawPosition(event->x() / 10, event->y() / 10);
+    int x = event->x() / 10;
+    int y = event->y() / 10;
+    if (currentTool) {
+        currentTool->useTool(x, y, pixels);
+    }
     update();
 }
 
 void Canvas::mouseMoveEvent(QMouseEvent *event) {
-    drawPosition(event->x() / 10, event->y() / 10);
-    update();
-}
-
-void Canvas::drawPosition(int x, int y) {
-    if (x >= 0 && x < pixels.size() && y >= 0 && y < pixels[0].size()) {
-        pixels[x][y].setColor(penColor);
+    if (event->buttons() & Qt::LeftButton) {
+        int x = event->x() / 10;
+        int y = event->y() / 10;
+        if (currentTool) {
+            currentTool->useTool(x, y, pixels);
+        }
+        update();
     }
 }
-
 
 
 

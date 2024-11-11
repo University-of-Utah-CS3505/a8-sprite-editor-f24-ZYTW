@@ -5,11 +5,10 @@
 #include <QColorDialog>
 #include <QWidget>
 #include <QVector>
-#include <vector>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPoint>
-#include <QImage>
+#include <vector>
 
 #include <QFile>
 #include <QJsonArray>
@@ -19,6 +18,7 @@
 #include <QDebug>
 
 #include "Pixel.h"
+#include "Tool.h"
 
 
 class Canvas : public QWidget
@@ -31,8 +31,7 @@ public:
     QVector<QImage> getFrames();
     QImage getCanvasImage() const;
 
-    void eraseWithPen(const QPoint& start, const QPoint& end, int width);
-    void drawWithPen(const QPoint& start, const QPoint& end, const QColor& color, int width);
+    void setTool(Tool* tool);
 
 signals:
     void updateCanvasDisplay(QPixmap);
@@ -50,13 +49,13 @@ protected:
     void mouseMoveEvent(QMouseEvent *event) override;
 
 private:
+    Tool* currentTool;
     int canvasSize;
-    int penSize;
     int framesPerSecond;
+    int penSize;
     std::vector<std::vector<Pixel>> pixels;
 
     void initializePixels();
-    void drawPosition(int x, int y);
     QVector<QImage> frames;
     QColor penColor;
     QImage currentImage;

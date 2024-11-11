@@ -10,14 +10,21 @@ CONFIG += c++17
 
 SOURCES += \
     canvas.cpp \
+    colorpalette.cpp \
+    eraser.cpp \
     main.cpp \
     mainwindow.cpp \
+    pen.cpp \
     pixel.cpp
 
 HEADERS += \
     canvas.h \
+    colorpalette.h \
+    eraser.h \
     mainwindow.h \
-    pixel.h
+    pen.h \
+    pixel.h \
+    tool.h
 
 FORMS += \
     mainwindow.ui
