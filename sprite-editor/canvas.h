@@ -30,6 +30,8 @@ public:
 
     QVector<QImage> getFrames();
     QImage getCanvasImage() const;
+    // Stamp Gallery
+    QImage getCurrentSprite() ;
 
     void setTool(Tool* tool);
 

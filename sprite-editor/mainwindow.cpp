@@ -6,6 +6,10 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
     , canvas(new Canvas(this))
     , colorPalette(new ColorPalette(this))
+    , stampGallery(new StampGallery())
+    , symmetryTool(new SymmetryTool())
+    , shapeTool(new ShapeTool())
+    , frameManager(new FrameManager())
 {
     ui->setupUi(this);
 
@@ -52,6 +56,26 @@ void MainWindow::setUpConnections()
     connect(canvas, &Canvas::updateCanvasDisplay, this, &MainWindow::updateCanvasDisplay);
 
     connect(colorPalette, &ColorPalette::colorSelected, this, &MainWindow::setPenColor);
+
+
+    //Frames buttons
+    connect(ui->previewButton, &QPushButton::clicked, [&]() { frameManager->startPreview(); });
+    connect(ui->addButton, &QPushButton::clicked, [&]() { frameManager->addFrame(); });
+    connect(ui->removeButton, &QPushButton::clicked, [&]() { frameManager->removeFrame(selectedIndex); });
+    connect(ui->fpsSlider, &QSlider::valueChanged, [&](int fps) { frameManager->setFPS(fps); });
+
+    //Shape buttons
+    connect(ui->rectangleButton, &QPushButton::clicked, [&]() { shapeTool->setShape("Rectangle"); });
+    connect(ui->ellipseButton, &QPushButton::clicked, [&]() { shapeTool->setShape("Ellipse"); });
+
+    //Stamp button
+    connect(ui->saveStampButton, &QPushButton::clicked, [&]() {
+        QImage currentSprite = canvas->getCurrentSprite();
+        stampGallery->saveStamp(currentSprite);
+    });
+
+    //Symmetry button
+    connect(ui->symmetryToggle, &QCheckBox::toggled, [&](bool enabled) { symmetryTool->enableSymmetry(enabled); });
 }
 
 void MainWindow::canvasSizeDialog() {

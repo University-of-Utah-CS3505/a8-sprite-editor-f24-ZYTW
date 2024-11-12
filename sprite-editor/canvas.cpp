@@ -21,6 +21,15 @@ void Canvas::setTool(Tool* tool) {
     currentTool = tool;
 }
 
+//Related to StampGallery
+QImage Canvas::getCurrentSprite() {
+    QImage image(size(), QImage::Format_ARGB32);
+    image.fill(Qt::transparent); // Fill with transparency
+    QPainter painter(&image);
+    this->render(&painter); // Renders the current canvas onto the QImage
+    return image;
+}
+
 QImage Canvas::getCanvasImage() const {
     QImage image(canvasSize, canvasSize, QImage::Format_ARGB32);
 

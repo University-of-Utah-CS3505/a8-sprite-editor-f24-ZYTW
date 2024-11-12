@@ -9,6 +9,10 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    FrameManager.cpp \
+    ShapeTool.cpp \
+    StampGallery.cpp \
+    SymmetryTool.cpp \
     canvas.cpp \
     colorpalette.cpp \
     eraser.cpp \
@@ -18,6 +22,10 @@ SOURCES += \
     pixel.cpp
 
 HEADERS += \
+    FrameManager.h \
+    ShapeTool.h \
+    StampGallery.h \
+    SymmetryTool.h \
     canvas.h \
     colorpalette.h \
     eraser.h \

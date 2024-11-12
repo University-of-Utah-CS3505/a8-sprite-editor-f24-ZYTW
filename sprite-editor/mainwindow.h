@@ -7,6 +7,10 @@
 #include "Pen.h"
 #include "Eraser.h"
 #include "Colorpalette.h"
+#include <ShapeTool.h>
+#include <FrameManager.h>
+#include <StampGallery.h>
+#include <SymmetryTool.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -51,6 +55,13 @@ private:
     Pen* penTool;
     Eraser* eraserTool;
     ColorPalette* colorPalette;
+
+    //
+    SymmetryTool *symmetryTool;
+    StampGallery *stampGallery;
+    FrameManager *frameManager;
+    ShapeTool *shapeTool;
+    int selectedIndex = 0;
 
     void updateCanvasTool();
 };

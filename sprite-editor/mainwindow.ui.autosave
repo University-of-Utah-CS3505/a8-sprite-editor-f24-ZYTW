@@ -431,19 +431,6 @@
      <string/>
     </property>
    </widget>
-   <widget class="QPushButton" name="saveStampButton">
-    <property name="geometry">
-     <rect>
-      <x>340</x>
-      <y>20</y>
-      <width>100</width>
-      <height>32</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>SaveStamp</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="addButton">
     <property name="geometry">
      <rect>
@@ -533,6 +520,19 @@
     </property>
     <property name="text">
      <string>symmetry</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="saveStampButton">
+    <property name="geometry">
+     <rect>
+      <x>330</x>
+      <y>10</y>
+      <width>141</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>SaveStamp</string>
     </property>
    </widget>
   </widget>
