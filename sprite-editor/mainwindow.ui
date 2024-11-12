@@ -160,11 +160,33 @@
      <rect>
       <x>40</x>
       <y>90</y>
-      <width>151</width>
+      <width>158</width>
       <height>341</height>
      </rect>
     </property>
-    <layout class="QFormLayout" name="Gallery"/>
+    <layout class="QFormLayout" name="Gallery">
+     <item row="0" column="0">
+      <widget class="QPushButton" name="previewButton">
+       <property name="text">
+        <string>preview</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QPushButton" name="addButton">
+       <property name="text">
+        <string>add</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0" colspan="2">
+      <widget class="QSlider" name="fpsSlider">
+       <property name="orientation">
+        <enum>Qt::Orientation::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </widget>
    <widget class="QLabel" name="canvas">
     <property name="geometry">
@@ -434,7 +456,7 @@
    <widget class="QPushButton" name="saveStampButton">
     <property name="geometry">
      <rect>
-      <x>340</x>
+      <x>360</x>
       <y>20</y>
       <width>100</width>
       <height>32</height>
@@ -444,95 +466,17 @@
      <string>SaveStamp</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="addButton">
-    <property name="geometry">
-     <rect>
-      <x>280</x>
-      <y>90</y>
-      <width>100</width>
-      <height>32</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>add</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="removeButton">
     <property name="geometry">
      <rect>
-      <x>400</x>
-      <y>90</y>
+      <x>230</x>
+      <y>20</y>
       <width>100</width>
       <height>32</height>
      </rect>
     </property>
     <property name="text">
      <string>remove</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="previewButton">
-    <property name="geometry">
-     <rect>
-      <x>340</x>
-      <y>50</y>
-      <width>100</width>
-      <height>32</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>preview</string>
-    </property>
-   </widget>
-   <widget class="QSlider" name="fpsSlider">
-    <property name="geometry">
-     <rect>
-      <x>320</x>
-      <y>130</y>
-      <width>160</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Orientation::Horizontal</enum>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="ellipseButton">
-    <property name="geometry">
-     <rect>
-      <x>500</x>
-      <y>50</y>
-      <width>100</width>
-      <height>32</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>ellipse</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="rectangleButton">
-    <property name="geometry">
-     <rect>
-      <x>500</x>
-      <y>10</y>
-      <width>100</width>
-      <height>32</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>rectangle</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="symmetryToggle">
-    <property name="geometry">
-     <rect>
-      <x>510</x>
-      <y>90</y>
-      <width>85</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>symmetry</string>
     </property>
    </widget>
   </widget>
@@ -542,7 +486,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>24</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

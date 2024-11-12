@@ -11,6 +11,7 @@
 #include <FrameManager.h>
 #include <StampGallery.h>
 #include <SymmetryTool.h>
+#include <QImage>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -60,7 +61,7 @@ private:
     SymmetryTool *symmetryTool;
     StampGallery *stampGallery;
     FrameManager *frameManager;
-    ShapeTool *shapeTool;
+    ShapeTool* shapeTool;
     int selectedIndex = 0;
 
     void updateCanvasTool();

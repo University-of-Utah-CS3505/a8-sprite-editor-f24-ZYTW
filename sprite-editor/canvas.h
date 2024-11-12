@@ -1,6 +1,7 @@
 #ifndef CANVAS_H
 #define CANVAS_H
 
+#include <QImage>
 #include <QColor>
 #include <QColorDialog>
 #include <QWidget>
@@ -18,6 +19,7 @@
 #include <QDebug>
 
 #include "Pixel.h"
+#include "ShapeTool.h"
 #include "Tool.h"
 
 
@@ -48,6 +50,7 @@ public slots:
 protected:
     void paintEvent(QPaintEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
 
 private:
@@ -56,6 +59,8 @@ private:
     int framesPerSecond;
     int penSize;
     std::vector<std::vector<Pixel>> pixels;
+    ShapeTool* shapeTool;
+    QPoint startPoint;
 
     void initializePixels();
     QVector<QImage> frames;

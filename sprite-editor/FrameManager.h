@@ -2,6 +2,7 @@
 #define FRAMEMANAGER_H
 #include <QList>
 #include <QTimer>
+#include <QImage>
 
 class FrameManager : public QObject {
     Q_OBJECT

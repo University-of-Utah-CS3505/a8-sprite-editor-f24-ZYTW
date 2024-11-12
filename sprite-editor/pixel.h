@@ -2,6 +2,7 @@
 #define PIXEL_H
 
 #include <QColor>
+#include <QImage>
 
 class Pixel
 {

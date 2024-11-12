@@ -3,6 +3,7 @@
 
 #include "Tool.h"
 #include "Pixel.h"
+#include <QImage>
 
 class Pen : public Tool {
 public:

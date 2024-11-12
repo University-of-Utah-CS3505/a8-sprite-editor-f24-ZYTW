@@ -72,7 +72,10 @@ void Canvas::paintEvent(QPaintEvent *event) {
 void Canvas::mousePressEvent(QMouseEvent *event) {
     int x = event->x() / 10;
     int y = event->y() / 10;
-    if (currentTool) {
+
+    if (currentTool == shapeTool) {
+        startPoint = QPoint(x, y);
+    } else if (currentTool) {
         currentTool->useTool(x, y, pixels);
     }
     update();
@@ -89,6 +92,16 @@ void Canvas::mouseMoveEvent(QMouseEvent *event) {
     }
 }
 
+void Canvas::mouseReleaseEvent(QMouseEvent *event) {
+    if (currentTool == shapeTool) {
+        int x = event->x() / 10;
+        int y = event->y() / 10;
+
+        shapeTool->drawShape(startPoint.x(), startPoint.y(), x, y, pixels);
+        startPoint = QPoint();  // Reset startPoint after drawing
+        update();
+    }
+}
 
 
 void Canvas::saveFile()

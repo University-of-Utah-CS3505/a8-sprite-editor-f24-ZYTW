@@ -3,7 +3,7 @@
 
 #include "Tool.h"
 #include "Pixel.h"
-
+#include <QImage>
 class Eraser : public Tool {
 public:
     Eraser(QColor backgroundColor = Qt::white) { this->color = backgroundColor; }

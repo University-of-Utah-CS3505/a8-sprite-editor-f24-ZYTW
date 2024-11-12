@@ -4,7 +4,7 @@
 #include <QColor>
 #include <QWidget>
 #include <QColorDialog>
-
+#include <QImage>
 class ColorPalette : public QWidget
 {
     Q_OBJECT

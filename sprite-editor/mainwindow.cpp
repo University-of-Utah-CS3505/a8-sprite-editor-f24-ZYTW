@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent)
     , colorPalette(new ColorPalette(this))
     , stampGallery(new StampGallery())
     , symmetryTool(new SymmetryTool())
-    , shapeTool(new ShapeTool())
+    , shapeTool(new ShapeTool(this))
     , frameManager(new FrameManager())
 {
     ui->setupUi(this);
@@ -65,8 +65,25 @@ void MainWindow::setUpConnections()
     connect(ui->fpsSlider, &QSlider::valueChanged, [&](int fps) { frameManager->setFPS(fps); });
 
     //Shape buttons
-    connect(ui->rectangleButton, &QPushButton::clicked, [&]() { shapeTool->setShape("Rectangle"); });
-    connect(ui->ellipseButton, &QPushButton::clicked, [&]() { shapeTool->setShape("Ellipse"); });
+    QMenu *shapeMenu = new QMenu(this);
+    QAction *rectAction = shapeMenu->addAction("Rectangle");
+    QAction *ellipseAction = shapeMenu->addAction("Ellipse");
+    QAction *triangleAction = shapeMenu->addAction("Triangle");
+    connect(rectAction, &QAction::triggered, [&]() {
+        shapeTool->setShape("Rectangle");
+        currentTool = shapeTool;
+        updateCanvasTool();
+    });
+    connect(ellipseAction, &QAction::triggered, [&]() {
+        shapeTool->setShape("Ellipse");
+        currentTool = shapeTool;
+        updateCanvasTool();
+    });
+    connect(triangleAction, &QAction::triggered, [&]() { shapeTool->setShape("Triangle");
+        currentTool = shapeTool;
+        updateCanvasTool(); });
+
+    ui->shapeButton->setMenu(shapeMenu);
 
     //Stamp button
     connect(ui->saveStampButton, &QPushButton::clicked, [&]() {
@@ -75,7 +92,9 @@ void MainWindow::setUpConnections()
     });
 
     //Symmetry button
-    connect(ui->symmetryToggle, &QCheckBox::toggled, [&](bool enabled) { symmetryTool->enableSymmetry(enabled); });
+    connect(ui->parallelButton, &QPushButton::clicked, [&]() {
+        symmetryTool->enableSymmetry(!symmetryTool->isSymmetryEnabled());
+    });
 }
 
 void MainWindow::canvasSizeDialog() {
