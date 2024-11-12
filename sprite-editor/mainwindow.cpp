@@ -40,8 +40,8 @@ void MainWindow::setUpConnections()
     connect(ui->inputButton, &QPushButton::clicked, this, &MainWindow::canvasSizeDialog);
     connect(ui->slider_fps, &QSlider::valueChanged, this, &MainWindow::updateFPS);
 
-    connect(ui->saveButton, &QPushButton::clicked, canvas , &Canvas::saveFile);
-    connect(ui->openButton, &QPushButton::clicked, canvas , &Canvas::openFile);
+    connect(ui->saveButton, &QPushButton::clicked, canvas , &Canvas::saveCanvas);
+    connect(ui->openButton, &QPushButton::clicked, canvas , &Canvas::loadCanvas);
 
     // Tool buttons
     connect(ui->penButton, &QPushButton::clicked, this, &MainWindow::selectPenTool);
