@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QSpinBox>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -17,11 +18,23 @@ MainWindow::MainWindow(QWidget *parent)
     shapeTool = new ShapeTool(this, "Rectangle");
     symmetryTool = new SymmetryTool(this);
 
+    frameDisplayWindow = ui->frameDisplayWindow;
     currentTool = penTool;
 
     animationWindow = ui->animationWindow;
-    connect(frameManager, &FrameManager::frameChanged, ui->animationWindow, &AnimationWindow::displayFrame);
 
+    connect(ui->spinBoxControl, QOverload<int>::of(&QSpinBox::valueChanged), this, [&](int value) {
+        selectedIndex = value;
+    });
+    connect(ui->frameListWidget, &QListWidget::currentRowChanged, this, [&](int row) {
+        selectedIndex = row + 1;  // Convert 0-based row to 1-based index
+        ui->spinBoxControl->setValue(selectedIndex);  // Update spin box to match selection
+        if (row >= 0 && row < frameManager->getFrames().size()) {
+            QImage selectedFrame = frameManager->getFrames().at(row);
+            ui->frameDisplayWindow->setFrameImage(selectedFrame);  // Display the frame in frameDisplayWindow
+            ui->frameDisplayWindow->show();  // Make sure the window is visible
+        }
+    });
 
     if (!ui->canvas->layout()) {
         QVBoxLayout *layout = new QVBoxLayout(ui->canvas);
@@ -76,32 +89,134 @@ void MainWindow::setUpConnections()
     //Frames buttons
     connect(ui->previewButton, &QPushButton::clicked, this, [&]() {
         if (previewActive) {
+            // Stop the preview and clear animationWindow
             frameManager->stopPreview();
             ui->previewButton->setText("Start Preview");
-            animationWindow->hide();  // Hide the animation window when stopping preview
+
+            // Disconnect frameChanged signal from animationWindow's displayFrame slot
+            disconnect(frameManager, &FrameManager::frameChanged, animationWindow, &AnimationWindow::displayFrame);
+
+            // Clear the animationWindow display when preview stops
+            animationWindow->displayFrame(QImage());  // Set to an empty QImage to clear display
+            animationWindow->hide();  // Optionally hide the window
         } else {
-            animationWindow->show();  // Ensure the animation window is shown
+            // Start the preview and connect frameChanged signal to animationWindow
             frameManager->startPreview();
             ui->previewButton->setText("Stop Preview");
+
+            // Connect frameChanged signal to animationWindow's displayFrame slot
+            connect(frameManager, &FrameManager::frameChanged, animationWindow, &AnimationWindow::displayFrame);
+
+            // Ensure the animationWindow is shown during preview
+            animationWindow->show();
         }
         previewActive = !previewActive;
     });
-    connect(ui->addFrameButton, &QPushButton::clicked, [&]() {
-        QImage currentCanvasImage = canvas->getCanvasImage();  // Capture current canvas content
-        frameManager->addFrame(currentCanvasImage);  // Add it as a new frame
-        selectedIndex = frameManager->getFrames().size() - 1;
+    connect(ui->addFrameButton, &QPushButton::clicked, this, [&]() {
+        QImage newFrame = canvas->getCanvasImage();  // Capture current canvas content as new frame
+        frameManager->addFrame(newFrame);  // Add the new frame to frameManager
+
+        // Add a new item to frameListWidget with the correct label
+        int newFrameIndex = frameManager->getFrames().size();
+        QListWidgetItem *newItem = new QListWidgetItem("Frame " + QString::number(newFrameIndex));
+        ui->frameListWidget->addItem(newItem);
+
+        // Set the new frame as the current frame in frameDisplayWindow only
+        ui->frameDisplayWindow->setFrameImage(newFrame);
+
+        // Update spinbox maximum to reflect the new total frame count
+        ui->spinBoxControl->setMaximum(newFrameIndex);
+        ui->spinBoxControl->setValue(newFrameIndex);  // Set the spinbox to the newly added frame
+        selectedIndex = newFrameIndex;
     });
     connect(ui->deleteFrameButton, &QPushButton::clicked, this, [&]() {
-        int frameToDelete = selectedIndex;  // Use the selected index or specify an index manually
-        frameManager->removeFrame(frameToDelete);
+        int frameToDelete = selectedIndex - 1;  // Convert 1-based to 0-based
+        if (frameToDelete >= 0 && frameToDelete < frameManager->getFrames().size()) {
+            frameManager->removeFrame(frameToDelete);
 
-        // Update the UI or selected index as needed
-        selectedIndex = qMax(0, selectedIndex - 1);  // Adjust selectedIndex to stay in bounds
+            // Add deleted frame to deletedFrameListWidget
+            int originalFrameNumber = frameToDelete + 1;
+            QListWidgetItem *deletedItem = new QListWidgetItem("Deleted Frame " + QString::number(originalFrameNumber));
+            deletedItem->setData(Qt::UserRole, originalFrameNumber);
+            ui->deletedFrameListWidget->addItem(deletedItem);
+
+            // Update frameListWidget
+            delete ui->frameListWidget->takeItem(frameToDelete);
+            for (int i = 0; i < ui->frameListWidget->count(); ++i) {
+                ui->frameListWidget->item(i)->setText("Frame " + QString::number(i + 1));
+            }
+
+            // Adjust spinbox maximum and selected index
+            int frameCount = frameManager->getFrames().size();
+            ui->spinBoxControl->setMaximum(qMax(1, frameCount));
+            selectedIndex = qMin(selectedIndex, frameCount);
+            ui->spinBoxControl->setValue(selectedIndex);
+
+            // Update frameDisplayWindow if frames remain
+            if (!frameManager->getFrames().isEmpty()) {
+                int nextFrameIndex = qMax(0, selectedIndex - 1);
+                ui->frameDisplayWindow->setFrameImage(frameManager->getFrames().at(nextFrameIndex));
+            } else {
+                ui->frameDisplayWindow->setFrameImage(QImage());
+            }
+        } else {
+            qDebug() << "Invalid deletion index" << frameToDelete;
+        }
     });
+
+    connect(ui->restoreFrameButton, &QPushButton::clicked, this, [&]() {
+        QListWidgetItem *selectedItem = ui->deletedFrameListWidget->currentItem();
+        if (selectedItem) {
+            int originalIndex = selectedItem->data(Qt::UserRole).toInt();
+
+            auto deletedFrames = frameManager->getDeletedFrames();
+            auto it = std::find_if(deletedFrames.begin(), deletedFrames.end(),
+                                   [&](const QPair<int, QImage> &pair) {
+                                       return pair.first == originalIndex;
+                                   });
+
+            if (it != deletedFrames.end()) {
+                const QImage &deletedFrameImage = it->second;
+                frameManager->restoreFrame(originalIndex, deletedFrameImage);
+
+                // Insert restored frame into frameListWidget at the correct position
+                QListWidgetItem *restoredItem = new QListWidgetItem("Frame " + QString::number(originalIndex));
+                ui->frameListWidget->insertItem(originalIndex - 1, restoredItem);
+
+                // Remove from deletedFrameListWidget
+                delete ui->deletedFrameListWidget->takeItem(ui->deletedFrameListWidget->row(selectedItem));
+
+                // Renumber frameListWidget to maintain sequence
+                for (int i = 0; i < ui->frameListWidget->count(); ++i) {
+                    ui->frameListWidget->item(i)->setText("Frame " + QString::number(i + 1));
+                }
+
+                // Adjust spinbox maximum and selected index
+                ui->spinBoxControl->setMaximum(ui->frameListWidget->count());
+                selectedIndex = originalIndex;
+                ui->spinBoxControl->setValue(selectedIndex);
+            } else {
+                qDebug() << "Could not find frame in deletedFrames for restoration.";
+            }
+        }
+    });
+
+    connect(ui->deletedFrameListWidget, &QListWidget::itemClicked, this, [&](QListWidgetItem *item) {
+        int originalIndex = item->data(Qt::UserRole).toInt();  // Retrieve the original index
+        auto deletedFrames = frameManager->getDeletedFrames();
+        for (const auto &deletedFrame : deletedFrames) {
+            if (deletedFrame.first == originalIndex) {
+                ui->frameDisplayWindow->setFrameImage(deletedFrame.second);  // Show the deleted frame in frameDisplayWindow
+                break;
+            }
+        }
+    });
+
     connect(ui->fpsSlider, &QSlider::valueChanged, [&](int fps) {
         frameManager->setFPS(fps);
         ui->labelFps->setText("FPS: " + QString::number(fps));
     });
+
 
 
 

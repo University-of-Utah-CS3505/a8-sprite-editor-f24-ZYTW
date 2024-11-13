@@ -15,6 +15,7 @@
 #include <QFileDialog>
 #include <QDir>
 #include <animationwindow.h>
+#include <framedisplaywindow.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -75,7 +76,8 @@ private:
     FrameManager *frameManager;
     ShapeTool* shapeTool;
     AnimationWindow* animationWindow;
-    int selectedIndex = 0;
+    FrameDisplayWindow* frameDisplayWindow;
+    int selectedIndex = 1;
     bool previewActive = false;
 
     void updateCanvasTool();

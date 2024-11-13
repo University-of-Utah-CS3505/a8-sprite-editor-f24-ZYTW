@@ -18,6 +18,7 @@ SOURCES += \
     colorpalette.cpp \
     eraser.cpp \
     filehandler.cpp \
+    framedisplaywindow.cpp \
     main.cpp \
     mainwindow.cpp \
     pen.cpp \
@@ -33,6 +34,7 @@ HEADERS += \
     colorpalette.h \
     eraser.h \
     filehandler.h \
+    framedisplaywindow.h \
     mainwindow.h \
     pen.h \
     pixel.h \

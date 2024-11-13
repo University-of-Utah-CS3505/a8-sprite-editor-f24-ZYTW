@@ -10,28 +10,51 @@ FrameManager::FrameManager(QObject *parent) : QObject(parent), playbackTimer(new
 
 void FrameManager::addFrame(const QImage &frameImage) {
     frames.append(frameImage);  // Add the canvas image as a new frame
-    qDebug() << "Frame added, total frames:" << frames.size();
 }
 
 void FrameManager::removeFrame(int index) {
     if (index >= 0 && index < frames.size()) {
-        frames.removeAt(index);  // Remove the frame at the specified index
-        qDebug() << "Frame at index" << index << "removed. Total frames:" << frames.size();
+        QImage deletedFrame = frames.at(index).copy();
+        deletedFrames.append(qMakePair(index + 1, deletedFrame));  // Store 1-based index
 
-        // Adjust current frame index if necessary
+        frames.removeAt(index);  // Remove from frames list
+
+        // Adjust currentFrameIndex if necessary
         if (currentFrameIndex >= frames.size()) {
-            currentFrameIndex = frames.size() - 1;  // Set to the last frame if the current index is out of bounds
+            currentFrameIndex = frames.size() - 1;
         }
 
-        // Optionally emit a signal to update the UI or notify other components
-        if (!frames.isEmpty()) {
-            emit frameChanged(frames[qMax(0, currentFrameIndex)]);
+        // Renumber deletedFrames and frames to prevent index mismatches
+        for (int i = 0; i < frames.size(); ++i) {
+            frames[i] = frames[i].copy();  // Reassign to ensure correct ordering
         }
+
+        emit frameChanged(frames.isEmpty() ? QImage() : frames[qMax(0, currentFrameIndex)]);
     } else {
-        qDebug() << "Invalid index" << index << ". Cannot remove frame.";
+        qDebug() << "Invalid frame index" << index << "for deletion.";
     }
 }
 
+void FrameManager::restoreFrame(int originalIndex, const QImage &frame) {
+    int zeroBasedIndex = originalIndex - 1;  // Convert to 0-based index
+
+    if (zeroBasedIndex >= 0 && zeroBasedIndex <= frames.size()) {
+        frames.insert(zeroBasedIndex, frame.copy());  // Insert an exact copy at the correct position
+
+        // Remove the restored frame from deletedFrames
+        auto it = std::find_if(deletedFrames.begin(), deletedFrames.end(),
+                               [&](const QPair<int, QImage> &pair) {
+                                   return pair.first == originalIndex;
+                               });
+        if (it != deletedFrames.end()) {
+            deletedFrames.erase(it);
+        }
+
+        emit frameChanged(frame);  // Update display
+    } else {
+        qDebug() << "Invalid original index" << originalIndex << "for restoration.";
+    }
+}
 void FrameManager::setFPS(int fps) {
     if (fps > 0) {
         playbackTimer->setInterval(1000 / fps);  // Adjust the interval based on FPS
@@ -58,4 +81,7 @@ void FrameManager::stopPreview() {
 
 QList<QImage> FrameManager::getFrames() const {
     return frames;
+}
+QList<QPair<int, QImage>> FrameManager::getDeletedFrames() const {
+    return deletedFrames;
 }

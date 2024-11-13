@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>984</width>
-    <height>785</height>
+    <height>818</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -396,7 +396,7 @@
      <rect>
       <x>790</x>
       <y>450</y>
-      <width>110</width>
+      <width>91</width>
       <height>29</height>
      </rect>
     </property>
@@ -452,8 +452,61 @@
       <height>101</height>
      </rect>
     </property>
+   </widget>
+   <widget class="QSpinBox" name="spinBoxControl">
+    <property name="geometry">
+     <rect>
+      <x>870</x>
+      <y>510</y>
+      <width>41</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>1</number>
+    </property>
+   </widget>
+   <widget class="QListWidget" name="frameListWidget">
+    <property name="geometry">
+     <rect>
+      <x>720</x>
+      <y>570</y>
+      <width>111</width>
+      <height>192</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="FrameDisplayWindow" name="frameDisplayWindow">
+    <property name="geometry">
+     <rect>
+      <x>320</x>
+      <y>590</y>
+      <width>331</width>
+      <height>101</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QListWidget" name="deletedFrameListWidget">
+    <property name="geometry">
+     <rect>
+      <x>840</x>
+      <y>570</y>
+      <width>111</width>
+      <height>192</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="restoreFrameButton">
+    <property name="geometry">
+     <rect>
+      <x>890</x>
+      <y>450</y>
+      <width>71</width>
+      <height>32</height>
+     </rect>
+    </property>
     <property name="text">
-     <string/>
+     <string>Restore</string>
     </property>
    </widget>
   </widget>
@@ -474,6 +527,11 @@
    <class>AnimationWindow</class>
    <extends>QLabel</extends>
    <header>animationwindow.h</header>
+  </customwidget>
+  <customwidget>
+   <class>FrameDisplayWindow</class>
+   <extends>QLabel</extends>
+   <header>framedisplaywindow.h</header>
   </customwidget>
  </customwidgets>
  <resources>
