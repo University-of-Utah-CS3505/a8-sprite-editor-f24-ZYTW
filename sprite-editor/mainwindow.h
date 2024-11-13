@@ -34,6 +34,10 @@ private slots:
     void selectEraserTool();
     void selectPaletteTool();
     void setPenColor(QColor color);
+    void selectShapeTool();
+    void setShapeColor(QColor color);
+    void setSymmetryColor(QColor color);
+    void updateToolButtonHighlight(QPushButton* selectedButton);
 
 public slots:
     // Connecting spot for all connections between slots and signals

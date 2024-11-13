@@ -8,13 +8,14 @@ MainWindow::MainWindow(QWidget *parent)
     , colorPalette(new ColorPalette(this))
     , stampGallery(new StampGallery())
     , symmetryTool(new SymmetryTool())
-    , shapeTool(new ShapeTool(this))
     , frameManager(new FrameManager())
 {
     ui->setupUi(this);
 
     penTool = new Pen(Qt::black);
     eraserTool = new Eraser(Qt::white);
+    shapeTool = new ShapeTool(this, "Rectangle");
+    symmetryTool = new SymmetryTool(this);
 
     currentTool = penTool;
 
@@ -44,18 +45,28 @@ void MainWindow::setUpConnections()
     connect(ui->inputButton, &QPushButton::clicked, this, &MainWindow::canvasSizeDialog);
     connect(ui->slider_fps, &QSlider::valueChanged, this, &MainWindow::updateFPS);
 
-    connect(ui->saveButton, &QPushButton::clicked, canvas , &Canvas::saveFile);
-    connect(ui->openButton, &QPushButton::clicked, canvas , &Canvas::openFile);
+    connect(ui->saveButton, &QPushButton::clicked, canvas , &Canvas::saveCanvas);
+    connect(ui->openButton, &QPushButton::clicked, canvas , &Canvas::loadCanvas);
 
     // Tool buttons
-    connect(ui->penButton, &QPushButton::clicked, this, &MainWindow::selectPenTool);
-    connect(ui->eraserButton, &QPushButton::clicked, this, &MainWindow::selectEraserTool);
+    connect(ui->penButton, &QPushButton::clicked, [&]() {
+        currentTool = penTool;
+        canvas->setTool(currentTool);
+        updateToolButtonHighlight(ui->penButton);
+    });
+    connect(ui->eraserButton, &QPushButton::clicked, [&]() {
+        currentTool = eraserTool;
+        canvas->setTool(currentTool);
+        updateToolButtonHighlight(ui->eraserButton);
+    });
     connect(ui->colorButton, &QPushButton::clicked, this, &MainWindow::selectPaletteTool);
     connect(this, &MainWindow::setPenColor, canvas, &Canvas::setPenColor);
 
     connect(canvas, &Canvas::updateCanvasDisplay, this, &MainWindow::updateCanvasDisplay);
 
     connect(colorPalette, &ColorPalette::colorSelected, this, &MainWindow::setPenColor);
+    connect(colorPalette, &ColorPalette::colorSelected, this, &MainWindow::setShapeColor);
+    connect(colorPalette, &ColorPalette::colorSelected, this, &MainWindow::setSymmetryColor);
 
 
     //Frames buttons
@@ -70,18 +81,25 @@ void MainWindow::setUpConnections()
     QAction *ellipseAction = shapeMenu->addAction("Ellipse");
     QAction *triangleAction = shapeMenu->addAction("Triangle");
     connect(rectAction, &QAction::triggered, [&]() {
-        shapeTool->setShape("Rectangle");
+        shapeTool->setShapeType("Rectangle");
         currentTool = shapeTool;
-        updateCanvasTool();
+        canvas->setTool(currentTool);
+        updateToolButtonHighlight(ui->shapeButton);
     });
+
     connect(ellipseAction, &QAction::triggered, [&]() {
-        shapeTool->setShape("Ellipse");
+        shapeTool->setShapeType("Ellipse");
         currentTool = shapeTool;
-        updateCanvasTool();
+        canvas->setTool(currentTool);
+        updateToolButtonHighlight(ui->shapeButton);
     });
-    connect(triangleAction, &QAction::triggered, [&]() { shapeTool->setShape("Triangle");
+
+    connect(triangleAction, &QAction::triggered, [&]() {
+        shapeTool->setShapeType("Triangle");
         currentTool = shapeTool;
-        updateCanvasTool(); });
+        canvas->setTool(currentTool);
+        updateToolButtonHighlight(ui->shapeButton);
+    });
 
     ui->shapeButton->setMenu(shapeMenu);
 
@@ -93,7 +111,9 @@ void MainWindow::setUpConnections()
 
     //Symmetry button
     connect(ui->parallelButton, &QPushButton::clicked, [&]() {
-        symmetryTool->enableSymmetry(!symmetryTool->isSymmetryEnabled());
+        currentTool = symmetryTool;
+        canvas->setTool(currentTool);
+        updateToolButtonHighlight(ui->parallelButton);
     });
 }
 
@@ -144,6 +164,37 @@ void MainWindow::selectPenTool() {
 void MainWindow::selectEraserTool() {
     currentTool = eraserTool;
     updateCanvasTool();
+}
+
+void MainWindow::selectShapeTool() {
+    shapeTool->setShapeType("Rectangle");
+    currentTool = shapeTool;
+     updateCanvasTool();
+}
+
+void MainWindow::setShapeColor(QColor color) {
+    if (shapeTool) {
+        shapeTool->setColor(color);
+    }
+}
+
+void MainWindow::setSymmetryColor(QColor color) {
+    if (symmetryTool) {
+        symmetryTool->setColor(color);
+    }
+}
+
+void MainWindow::updateToolButtonHighlight(QPushButton* selectedButton) {
+    // Reset all tool buttons to their default state
+    ui->penButton->setStyleSheet("");
+    ui->eraserButton->setStyleSheet("");
+    ui->shapeButton->setStyleSheet("");
+    ui->parallelButton->setStyleSheet("");
+
+    // Highlight the selected button
+    if (selectedButton) {
+        selectedButton->setStyleSheet("background-color: yellow;");
+    }
 }
 
 void MainWindow::updateCanvasTool() {

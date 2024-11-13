@@ -1,44 +1,25 @@
 #include "SymmetryTool.h"
-#include <QDebug>
 
-SymmetryTool::SymmetryTool(QObject* parent) : QObject(parent) {}
+SymmetryTool::SymmetryTool(QObject* parent)
+    : Tool(parent) {}
 
-void SymmetryTool::enableSymmetry(bool enabled) {
-    symmetryEnabled = enabled;
-}
-
-bool SymmetryTool::isSymmetryEnabled() const {
-    return symmetryEnabled;
-}
-
-void SymmetryTool::drawSymmetry(std::vector<std::vector<Pixel>>& pixels, const QPoint& point, bool horizontal) {
-    if (!symmetryEnabled) {
-        return;  // Symmetry mode is off
+void SymmetryTool::useTool(int x, int y, std::vector<std::vector<Pixel>>& pixels) {
+    // 绘制当前点
+    if (x >= 0 && x < pixels.size() && y >= 0 && y < pixels[0].size()) {
+        pixels[x][y].setColor(color);
     }
 
-    int canvasWidth = pixels.size();
-    int canvasHeight = pixels[0].size();
-
-    int x = point.x();
-    int y = point.y();
-
-    if (x >= 0 && x < canvasWidth && y >= 0 && y < canvasHeight) {
-        pixels[x][y].setColor(Qt::black);  // Draw original point
-
-        if (horizontal) {
-            // Reflect horizontally
-            int mirroredY = canvasHeight - 1 - y;
-            if (mirroredY >= 0 && mirroredY < canvasHeight) {
-                pixels[x][mirroredY].setColor(Qt::black);
-            }
-        } else {
-            // Reflect vertically
-            int mirroredX = canvasWidth - 1 - x;
-            if (mirroredX >= 0 && mirroredX < canvasWidth) {
-                pixels[mirroredX][y].setColor(Qt::black);
-            }
-        }
-    } else {
-        qWarning() << "Point is out of canvas bounds!";
+    // 绘制水平对称点
+    int mirroredX = canvasSize - 1 - x;
+    if (mirroredX >= 0 && mirroredX < pixels.size() && y >= 0 && y < pixels[0].size()) {
+        pixels[mirroredX][y].setColor(color);
     }
+}
+
+void SymmetryTool::setCanvasSize(int size) {
+    canvasSize = size;
+}
+
+void SymmetryTool::setColor(QColor newColor) {
+    color = newColor;
 }

@@ -11,16 +11,10 @@
 #include <QPoint>
 #include <vector>
 
-#include <QFile>
-#include <QJsonArray>
-#include <QJsonObject>
-#include <QJsonDocument>
-#include <QFileDialog>
-#include <QDebug>
-
 #include "Pixel.h"
 #include "ShapeTool.h"
 #include "Tool.h"
+#include "FileHandler.h"
 
 
 class Canvas : public QWidget
@@ -44,8 +38,9 @@ public slots:
     void setCanvasSize(int size);
     void setFramesPerSecond(int fps);
     void setPenColor(QColor color);
-    void openFile();
-    void saveFile();
+
+    void saveCanvas();
+    void loadCanvas();
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -59,14 +54,13 @@ private:
     int framesPerSecond;
     int penSize;
     std::vector<std::vector<Pixel>> pixels;
-    ShapeTool* shapeTool;
+    bool isDragging = false;
     QPoint startPoint;
+    QPoint endPoint;
 
     void initializePixels();
+    FileHandler fileHandler;
     QVector<QImage> frames;
-    QColor penColor;
-    QImage currentImage;
-    QPoint currentPoint;
 };
 
 #endif // CANVAS_H

@@ -6,16 +6,24 @@
 #include <vector>
 
 class ShapeTool : public Tool {
-    Q_OBJECT  // Required since Tool is QObject-based
+    Q_OBJECT
 
 public:
-    explicit ShapeTool(QObject* parent = nullptr) : Tool(parent) {}
-    void setShape(const QString& shape) { shapeType = shape; }
-    void drawShape(int x1, int y1, int x2, int y2, std::vector<std::vector<Pixel>>& pixels);
+    explicit ShapeTool(QObject* parent = nullptr, const QString& initialShapeType = "Rectangle");
+    void setShapeType(const QString& type);
     void useTool(int x, int y, std::vector<std::vector<Pixel>>& pixels) override;
+    void startDragging(const QPoint& start);
+    void stopDragging();
 
 private:
     QString shapeType;
+    QPoint startPoint;
+    bool isDragging;
+    QPoint endPoint;
+    void drawShape(std::vector<std::vector<Pixel>>& pixels);
+    void drawSymmetricPixels(int cx, int cy, int x, int y, std::vector<std::vector<Pixel>>& pixels);
+    void drawEllipse(int startX, int startY, int endX, int endY, std::vector<std::vector<Pixel>>& pixels);
+    void drawTriangle(int startX, int startY, int endX, int endY, std::vector<std::vector<Pixel>>& pixels);
 };
 
 #endif // SHAPETOOL_H

@@ -10,7 +10,7 @@ class Tool : public QObject {
     Q_OBJECT
 
 public:
-    explicit Tool(QObject* parent = nullptr) : QObject(parent) {}  // Inline constructor
+    explicit Tool(QObject* parent = nullptr) : QObject(parent) {}
     virtual ~Tool() = default;
 
     virtual void useTool(int x, int y, std::vector<std::vector<Pixel>>& pixels) = 0;

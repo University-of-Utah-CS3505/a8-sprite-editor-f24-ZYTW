@@ -1,67 +1,117 @@
 #include "ShapeTool.h"
 #include <QDebug>
+#include <cmath>
 
-void ShapeTool::drawShape(int x1, int y1, int x2, int y2, std::vector<std::vector<Pixel>> &pixels) {
-    if (x1 < 0 || y1 < 0 || x2 < 0 || y2 < 0 || x1 >= pixels.size() || x2 >= pixels.size() || y1 >= pixels[0].size() || y2 >= pixels[0].size()) {
-        qWarning() << "ShapeTool: Out-of-bounds pixel coordinates!";
-        return;
-    }
+ShapeTool::ShapeTool(QObject* parent, const QString& initialShapeType)
+    : Tool(parent), shapeType(initialShapeType) {}
 
-    int startX = std::min(x1, x2);
-    int startY = std::min(y1, y2);
-    int endX = std::max(x1, x2);
-    int endY = std::max(y1, y2);
+void ShapeTool::setShapeType(const QString& type) {
+    shapeType = type;
+}
 
-    if (shapeType == "Rectangle") {
-        for (int x = startX; x <= endX; ++x) {
-            for (int y = startY; y <= endY; ++y) {
-                pixels[x][y].setColor(Qt::black);
-            }
-        }
-    } else if (shapeType == "Ellipse") {
-        int a = (endX - startX) / 2;  // Horizontal radius
-        int b = (endY - startY) / 2;  // Vertical radius
-        int centerX = startX + a;
-        int centerY = startY + b;
+void ShapeTool::startDragging(const QPoint& start) {
+    startPoint = start;
+    isDragging = true;
+}
 
-        for (int x = -a; x <= a; ++x) {
-            for (int y = -b; y <= b; ++y) {
-                if ((x * x * b * b) + (y * y * a * a) <= (a * a * b * b)) {
-                    int px = centerX + x;
-                    int py = centerY + y;
-                    if (px >= 0 && px < pixels.size() && py >= 0 && py < pixels[0].size()) {
-                        pixels[px][py].setColor(Qt::black);
-                    }
-                }
-            }
-        }
-    } else if (shapeType == "Triangle") {
-        QPoint p1(startX, endY);   // Bottom-left
-        QPoint p2(endX, endY);     // Bottom-right
-        QPoint p3((startX + endX) / 2, startY);  // Top-center
+void ShapeTool::stopDragging() {
+    isDragging = false;
+}
 
-        auto isInsideTriangle = [](QPoint p, QPoint a, QPoint b, QPoint c) -> bool {
-            int w1 = (p.x() * (a.y() - c.y()) + (a.x() - c.x()) * p.y() + (c.x() * a.y() - a.x() * c.y()));
-            int w2 = (p.x() * (b.y() - a.y()) + (b.x() - a.x()) * p.y() + (a.x() * b.y() - b.x() * a.y()));
-            int w3 = (p.x() * (c.y() - b.y()) + (c.x() - b.x()) * p.y() + (b.x() * c.y() - c.x() * b.y()));
-            return (w1 <= 0 && w2 <= 0 && w3 <= 0) || (w1 >= 0 && w2 >= 0 && w3 >= 0);
-        };
-
-        for (int x = startX; x <= endX; ++x) {
-            for (int y = startY; y <= endY; ++y) {
-                if (isInsideTriangle(QPoint(x, y), p1, p2, p3)) {
-                    pixels[x][y].setColor(Qt::black);
-                }
-            }
-        }
+void ShapeTool::useTool(int x, int y, std::vector<std::vector<Pixel>>& pixels) {
+    if (isDragging) {
+        endPoint = QPoint(x, y);
+        drawShape(pixels);  // Draw shape on mouse release
+        stopDragging();
     }
 }
 
+void ShapeTool::drawShape(std::vector<std::vector<Pixel>>& pixels) {
+    int startX = std::min(startPoint.x(), endPoint.x());
+    int startY = std::min(startPoint.y(), endPoint.y());
+    int endX = std::max(startPoint.x(), endPoint.x());
+    int endY = std::max(startPoint.y(), endPoint.y());
 
-void ShapeTool::useTool(int x, int y, std::vector<std::vector<Pixel>> &pixels) {
-    int x2 = x + 1;  // Default small area for testing
-    int y2 = y + 1;  // You can update with variables for wider area based on state
+    if (shapeType == "Rectangle") {
+        for (int x = startX; x <= endX; ++x) {
+            pixels[x][startY].setColor(color);  // Top edge
+            pixels[x][endY].setColor(color);    // Bottom edge
+        }
+        for (int y = startY; y <= endY; ++y) {
+            pixels[startX][y].setColor(color);  // Left edge
+            pixels[endX][y].setColor(color);    // Right edge
+        }
+    } else if (shapeType == "Ellipse") {
+        drawEllipse(startX, startY, endX, endY, pixels);
+    } else if (shapeType == "Triangle") {
+        drawTriangle(startX, startY, endX, endY, pixels);
+    }
+}
 
-    drawShape(x, y, x2, y2, pixels);
-    qDebug() << "Shape tool used at:" << x << y;
+void ShapeTool::drawEllipse(int startX, int startY, int endX, int endY, std::vector<std::vector<Pixel>>& pixels) {
+    int a = (endX - startX) / 2;  // 半长轴
+    int b = (endY - startY) / 2;  // 半短轴
+    int centerX = startX + a;
+    int centerY = startY + b;
+
+    int x = 0;
+    int y = b;
+    int a2 = a * a;
+    int b2 = b * b;
+    int d1 = b2 - a2 * b + 0.25 * a2;
+
+    while (b2 * x <= a2 * y) {
+        drawSymmetricPixels(centerX, centerY, x, y, pixels);
+        if (d1 < 0) {
+            d1 += b2 * (2 * x + 3);
+        } else {
+            d1 += b2 * (2 * x + 3) + a2 * (-2 * y + 2);
+            y--;
+        }
+        x++;
+    }
+
+    int d2 = b2 * (x + 0.5) * (x + 0.5) + a2 * (y - 1) * (y - 1) - a2 * b2;
+
+    while (y >= 0) {
+        drawSymmetricPixels(centerX, centerY, x, y, pixels);
+        if (d2 > 0) {
+            d2 += a2 * (-2 * y + 3);
+        } else {
+            d2 += b2 * (2 * x + 2) + a2 * (-2 * y + 3);
+            x++;
+        }
+        y--;
+    }
+}
+
+void ShapeTool::drawSymmetricPixels(int cx, int cy, int x, int y, std::vector<std::vector<Pixel>>& pixels) {
+    if (cx + x >= 0 && cx + x < pixels.size() && cy + y >= 0 && cy + y < pixels[0].size())
+        pixels[cx + x][cy + y].setColor(color);
+    if (cx - x >= 0 && cx - x < pixels.size() && cy + y >= 0 && cy + y < pixels[0].size())
+        pixels[cx - x][cy + y].setColor(color);
+    if (cx + x >= 0 && cx + x < pixels.size() && cy - y >= 0 && cy - y < pixels[0].size())
+        pixels[cx + x][cy - y].setColor(color);
+    if (cx - x >= 0 && cx - x < pixels.size() && cy - y >= 0 && cy - y < pixels[0].size())
+        pixels[cx - x][cy - y].setColor(color);
+}
+
+void ShapeTool::drawTriangle(int startX, int startY, int endX, int endY, std::vector<std::vector<Pixel>>& pixels) {
+    int baseMidX = (startX + endX) / 2;
+
+    for (int x = startX; x <= endX; ++x) {
+        pixels[x][endY].setColor(color);  // 底边
+    }
+
+    float slopeLeft = static_cast<float>(endY - startY) / (baseMidX - startX);
+    float slopeRight = static_cast<float>(endY - startY) / (endX - baseMidX);
+
+    for (int y = startY; y <= endY; ++y) {
+        int leftX = baseMidX - static_cast<int>((y - startY) / slopeLeft);
+        int rightX = baseMidX + static_cast<int>((y - startY) / slopeRight);
+        if (leftX >= 0 && leftX < pixels.size())
+            pixels[leftX][y].setColor(color);
+        if (rightX >= 0 && rightX < pixels.size())
+            pixels[rightX][y].setColor(color);
+    }
 }

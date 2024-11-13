@@ -16,6 +16,7 @@ SOURCES += \
     canvas.cpp \
     colorpalette.cpp \
     eraser.cpp \
+    filehandler.cpp \
     main.cpp \
     mainwindow.cpp \
     pen.cpp \
@@ -29,6 +30,7 @@ HEADERS += \
     canvas.h \
     colorpalette.h \
     eraser.h \
+    filehandler.h \
     mainwindow.h \
     pen.h \
     pixel.h \
