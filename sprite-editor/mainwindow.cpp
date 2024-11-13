@@ -19,6 +19,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     currentTool = penTool;
 
+    animationWindow = ui->animationWindow;
+    connect(frameManager, &FrameManager::frameChanged, ui->animationWindow, &AnimationWindow::displayFrame);
+
+
     if (!ui->canvas->layout()) {
         QVBoxLayout *layout = new QVBoxLayout(ui->canvas);
         ui->canvas->setLayout(layout);
@@ -70,10 +74,36 @@ void MainWindow::setUpConnections()
 
 
     //Frames buttons
-    connect(ui->previewButton, &QPushButton::clicked, [&]() { frameManager->startPreview(); });
-    connect(ui->addButton, &QPushButton::clicked, [&]() { frameManager->addFrame(); });
-    connect(ui->removeButton, &QPushButton::clicked, [&]() { frameManager->removeFrame(selectedIndex); });
-    connect(ui->fpsSlider, &QSlider::valueChanged, [&](int fps) { frameManager->setFPS(fps); });
+    connect(ui->previewButton, &QPushButton::clicked, this, [&]() {
+        if (previewActive) {
+            frameManager->stopPreview();
+            ui->previewButton->setText("Start Preview");
+            animationWindow->hide();  // Hide the animation window when stopping preview
+        } else {
+            animationWindow->show();  // Ensure the animation window is shown
+            frameManager->startPreview();
+            ui->previewButton->setText("Stop Preview");
+        }
+        previewActive = !previewActive;
+    });
+    connect(ui->addFrameButton, &QPushButton::clicked, [&]() {
+        QImage currentCanvasImage = canvas->getCanvasImage();  // Capture current canvas content
+        frameManager->addFrame(currentCanvasImage);  // Add it as a new frame
+        selectedIndex = frameManager->getFrames().size() - 1;
+    });
+    connect(ui->deleteFrameButton, &QPushButton::clicked, this, [&]() {
+        int frameToDelete = selectedIndex;  // Use the selected index or specify an index manually
+        frameManager->removeFrame(frameToDelete);
+
+        // Update the UI or selected index as needed
+        selectedIndex = qMax(0, selectedIndex - 1);  // Adjust selectedIndex to stay in bounds
+    });
+    connect(ui->fpsSlider, &QSlider::valueChanged, [&](int fps) {
+        frameManager->setFPS(fps);
+        ui->labelFps->setText("FPS: " + QString::number(fps));
+    });
+
+
 
     //Shape buttons
     QMenu *shapeMenu = new QMenu(this);
@@ -132,10 +162,13 @@ void MainWindow::canvasSizeDialog() {
 
     if (ok && userCanvasSize >= 1 && userCanvasSize <= 64) {
         canvas->setCanvasSize(userCanvasSize);
+
+
         QString labelSize = QString::number(userCanvasSize * 10) + " x " + QString::number(userCanvasSize * 10);
         ui->labelCanvasSize->setText("Canvas Size: " + labelSize);
 
         updateCanvasDisplay(QPixmap::fromImage(canvas->getCanvasImage().scaled(400, 400)));
+        canvas->update();
         ui->canvasDialog->hide();
         setEnabled(true);
     } else {
@@ -218,6 +251,10 @@ void MainWindow::applyStampToCanvas(const QJsonObject& stampJson) {
 
 void MainWindow::onSelectStampButtonClicked() {
     canvas->startSelectingStamp();
+}
+
+void MainWindow::displayFrame(const QImage &frame) {
+    ui->canvas->setPixmap(QPixmap::fromImage(frame).scaled(ui->canvas->size()));
 }
 
 void MainWindow::updateCanvasTool() {

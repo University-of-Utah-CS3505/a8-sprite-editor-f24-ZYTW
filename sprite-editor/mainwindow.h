@@ -14,6 +14,7 @@
 #include <QImage>
 #include <QFileDialog>
 #include <QDir>
+#include <animationwindow.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -43,6 +44,7 @@ private slots:
     void onSelectStampButtonClicked();
     void applyStampToCanvas(const QJsonObject& stampJson);
 
+
 public slots:
     // Connecting spot for all connections between slots and signals
     void setUpConnections();
@@ -53,6 +55,8 @@ public slots:
 
     // Change FPS Speed based on the users' selection
     void updateFPS();
+
+    void displayFrame(const QImage &frame);
 
 private:
     Ui::MainWindow *ui;
@@ -70,7 +74,9 @@ private:
     StampGallery *stampGallery;
     FrameManager *frameManager;
     ShapeTool* shapeTool;
+    AnimationWindow* animationWindow;
     int selectedIndex = 0;
+    bool previewActive = false;
 
     void updateCanvasTool();
 };

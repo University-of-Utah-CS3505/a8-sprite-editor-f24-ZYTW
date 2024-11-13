@@ -13,6 +13,7 @@ SOURCES += \
     ShapeTool.cpp \
     StampGallery.cpp \
     SymmetryTool.cpp \
+    animationwindow.cpp \
     canvas.cpp \
     colorpalette.cpp \
     eraser.cpp \
@@ -27,6 +28,7 @@ HEADERS += \
     ShapeTool.h \
     StampGallery.h \
     SymmetryTool.h \
+    animationwindow.h \
     canvas.h \
     colorpalette.h \
     eraser.h \

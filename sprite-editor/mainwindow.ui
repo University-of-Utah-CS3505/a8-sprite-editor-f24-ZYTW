@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>954</width>
+    <width>984</width>
     <height>785</height>
    </rect>
   </property>
@@ -158,31 +158,31 @@
    <widget class="QWidget" name="formLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>90</y>
+      <x>40</x>
+      <y>60</y>
       <width>161</width>
       <height>441</height>
      </rect>
     </property>
     <layout class="QFormLayout" name="Gallery">
-     <item row="0" column="0">
-      <widget class="QPushButton" name="previewButton">
-       <property name="text">
-        <string>preview</string>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="1">
-      <widget class="QPushButton" name="addButton">
+      <widget class="QPushButton" name="selectStampButton">
        <property name="text">
-        <string>add</string>
+        <string>SelectStamp</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="0" colspan="2">
-      <widget class="QSlider" name="fpsSlider">
-       <property name="orientation">
-        <enum>Qt::Orientation::Horizontal</enum>
+     <item row="1" column="1">
+      <widget class="QPushButton" name="saveStampButton">
+       <property name="text">
+        <string>SaveStamp</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QPushButton" name="loadStampButton">
+       <property name="text">
+        <string>LoadStamp</string>
        </property>
       </widget>
      </item>
@@ -191,72 +191,10 @@
    <widget class="QLabel" name="canvas">
     <property name="geometry">
      <rect>
-      <x>200</x>
-      <y>90</y>
+      <x>220</x>
+      <y>60</y>
       <width>561</width>
-      <height>451</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QScrollArea" name="scrollArea">
-    <property name="geometry">
-     <rect>
-      <x>230</x>
-      <y>550</y>
-      <width>471</width>
-      <height>181</height>
-     </rect>
-    </property>
-    <property name="widgetResizable">
-     <bool>true</bool>
-    </property>
-    <widget class="QWidget" name="scrollAreaWidgetContents">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>0</y>
-       <width>469</width>
-       <height>179</height>
-      </rect>
-     </property>
-    </widget>
-   </widget>
-   <widget class="QPushButton" name="addFrameButton">
-    <property name="geometry">
-     <rect>
-      <x>790</x>
-      <y>450</y>
-      <width>61</width>
-      <height>71</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Add</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="deleteFrameButton">
-    <property name="geometry">
-     <rect>
-      <x>790</x>
-      <y>520</y>
-      <width>61</width>
-      <height>71</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Delete</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="animationWindow">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>440</y>
-      <width>151</width>
-      <height>131</height>
+      <height>401</height>
      </rect>
     </property>
     <property name="text">
@@ -359,8 +297,8 @@
    <widget class="QWidget" name="canvasDialog" native="true">
     <property name="geometry">
      <rect>
-      <x>370</x>
-      <y>250</y>
+      <x>400</x>
+      <y>130</y>
       <width>231</width>
       <height>171</height>
      </rect>
@@ -453,56 +391,69 @@
      <string/>
     </property>
    </widget>
-   <widget class="QPushButton" name="saveStampButton">
+   <widget class="QPushButton" name="previewButton">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>20</y>
-      <width>100</width>
-      <height>32</height>
+      <x>790</x>
+      <y>450</y>
+      <width>110</width>
+      <height>29</height>
      </rect>
     </property>
     <property name="text">
-     <string>SaveStamp</string>
+     <string>Start Preview</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="removeButton">
+   <widget class="QPushButton" name="addFrameButton">
     <property name="geometry">
      <rect>
-      <x>230</x>
-      <y>20</y>
-      <width>100</width>
-      <height>32</height>
+      <x>790</x>
+      <y>480</y>
+      <width>71</width>
+      <height>29</height>
      </rect>
     </property>
     <property name="text">
-     <string>remove</string>
+     <string>Add</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="selectStampButton">
+   <widget class="QPushButton" name="deleteFrameButton">
     <property name="geometry">
      <rect>
-      <x>390</x>
-      <y>20</y>
-      <width>101</width>
-      <height>31</height>
+      <x>790</x>
+      <y>510</y>
+      <width>69</width>
+      <height>29</height>
      </rect>
     </property>
     <property name="text">
-     <string>SelectStamp</string>
+     <string>Delete</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="loadStampButton">
+   <widget class="QSlider" name="fpsSlider">
     <property name="geometry">
      <rect>
-      <x>630</x>
-      <y>22</y>
-      <width>101</width>
-      <height>31</height>
+      <x>790</x>
+      <y>540</y>
+      <width>151</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Orientation::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="AnimationWindow" name="animationWindow">
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>480</y>
+      <width>501</width>
+      <height>101</height>
      </rect>
     </property>
     <property name="text">
-     <string>LoadStamp</string>
+     <string/>
     </property>
    </widget>
   </widget>
@@ -511,13 +462,20 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>954</width>
-     <height>21</height>
+     <width>984</width>
+     <height>24</height>
     </rect>
    </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>AnimationWindow</class>
+   <extends>QLabel</extends>
+   <header>animationwindow.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="resources.qrc"/>
  </resources>
