@@ -103,10 +103,19 @@ void MainWindow::setUpConnections()
 
     ui->shapeButton->setMenu(shapeMenu);
 
-    //Stamp button
+    //StampGallery button
+    connect(ui->selectStampButton, &QPushButton::clicked, this, &MainWindow::onSelectStampButtonClicked);
     connect(ui->saveStampButton, &QPushButton::clicked, [&]() {
-        QImage currentSprite = canvas->getCurrentSprite();
-        stampGallery->saveStamp(currentSprite);
+        auto selectedPixels = canvas->getSelectedPixels();
+        if (!selectedPixels.empty()) {
+            stampGallery->saveStamp(selectedPixels);
+        } else {
+            qWarning("No pixels selected for saving the stamp");
+        }
+    });
+    connect(ui->loadStampButton, &QPushButton::clicked, [&]() {
+         stampGallery->loadStampsFromResource();
+         stampGallery->show();
     });
 
     //Symmetry button
@@ -195,6 +204,20 @@ void MainWindow::updateToolButtonHighlight(QPushButton* selectedButton) {
     if (selectedButton) {
         selectedButton->setStyleSheet("background-color: yellow;");
     }
+}
+
+void MainWindow::applyStampToCanvas(const QJsonObject& stampJson) {
+    canvas->setCurrentStamp(stampJson);  // Set the selected stamp data
+
+    QPoint cursorPos = canvas->mapFromGlobal(QCursor::pos());
+    int x = cursorPos.x() / 10;
+    int y = cursorPos.y() / 10;
+
+    canvas->applyStamp(stampJson, 0, 0);
+}
+
+void MainWindow::onSelectStampButtonClicked() {
+    canvas->startSelectingStamp();
 }
 
 void MainWindow::updateCanvasTool() {

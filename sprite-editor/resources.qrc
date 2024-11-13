@@ -6,4 +6,5 @@
         <file>icon_pencil.png</file>
         <file>icon_shapes.png</file>
     </qresource>
+    <qresource prefix="/stamp_gallery"/>
 </RCC>

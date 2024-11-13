@@ -1,8 +1,5 @@
-#include <QFileDialog>
-#include <QPainter>
-#include <QMouseEvent>
-
 #include "Canvas.h"
+#include "qjsonobject.h"
 
 Canvas::Canvas(QWidget *parent): QWidget(parent), currentTool(nullptr)
 {
@@ -54,6 +51,17 @@ void Canvas::setFramesPerSecond(int fps)
     framesPerSecond = fps;
 }
 
+void Canvas::startSelectingStamp() {
+    selectingStamp = true;
+}
+
+void Canvas::stopSelectingStamp() {
+    selectingStamp = false;
+    QImage selectedStamp = getCurrentSprite().copy(selectedArea.normalized());
+    emit stampSelected(selectedStamp);
+    update();
+}
+
 void Canvas::setPenColor(QColor color) {
     if (currentTool) {
         currentTool->setColor(color);
@@ -68,13 +76,21 @@ void Canvas::paintEvent(QPaintEvent *event) {
             painter.drawRect(i * 10, j * 10, 10, 10);
         }
     }
+
+    if (selectingStamp) {
+        painter.setPen(QPen(Qt::blue, 2, Qt::DashLine));
+        painter.setBrush(Qt::NoBrush);
+        painter.drawRect(QRect(selectionStart * 10, selectionEnd * 10).normalized());
+    }
 }
 
 void Canvas::mousePressEvent(QMouseEvent *event) {
     int x = event->x() / 10;
     int y = event->y() / 10;
-
-    if (currentTool) {
+    if (selectingStamp){
+        selectionStart = QPoint(x, y);
+        selectionEnd = selectionStart;
+    }else if (currentTool) {
         if (dynamic_cast<ShapeTool*>(currentTool)) {
             auto shapeTool = static_cast<ShapeTool*>(currentTool);
             shapeTool->startDragging(QPoint(x, y));
@@ -86,7 +102,10 @@ void Canvas::mousePressEvent(QMouseEvent *event) {
 }
 
 void Canvas::mouseMoveEvent(QMouseEvent *event) {
-    if (currentTool && !(dynamic_cast<ShapeTool*>(currentTool))) {
+    if (selectingStamp && (event->buttons() & Qt::LeftButton)) {
+        selectionEnd = event->pos() / 10;
+        update();
+    } else if (currentTool && !(dynamic_cast<ShapeTool*>(currentTool))) {
         int x = event->x() / 10;
         int y = event->y() / 10;
         currentTool->useTool(x, y, pixels);
@@ -98,10 +117,68 @@ void Canvas::mouseReleaseEvent(QMouseEvent *event) {
     int x = event->x() / 10;
     int y = event->y() / 10;
 
-    if (currentTool) {
+    if (selectingStamp) {
+        selectionEnd = QPoint(x, y);
+        selectedArea = QRect(selectionStart, selectionEnd).normalized();
+        selectedArea.setTopLeft(selectedArea.topLeft() * 10);
+        selectedArea.setBottomRight(selectedArea.bottomRight() * 10);
+        stopSelectingStamp();
+    } else if (currentTool) {
         currentTool->useTool(x, y, pixels);
     }
     update();
+}
+
+std::vector<std::vector<Pixel>> Canvas::getSelectedPixels() const {
+    std::vector<std::vector<Pixel>> selectedPixels;
+    int startX = selectedArea.left() / 10;
+    int startY = selectedArea.top() / 10;
+    int width = selectedArea.width() / 10;
+    int height = selectedArea.height() / 10;
+
+    for (int x = startX; x < startX + width; ++x) {
+        std::vector<Pixel> row;
+        for (int y = startY; y < startY + height; ++y) {
+            row.push_back(pixels[x][y]);
+        }
+        selectedPixels.push_back(row);
+    }
+
+    return selectedPixels;
+}
+
+void Canvas::setCurrentStamp(const QJsonObject& stampJson) {
+    currentStampJson = stampJson;  // Store the selected stamp data
+}
+
+void Canvas::applyStamp(const QJsonObject& stampJson, int offsetX, int offsetY) {
+    if (!stampJson.contains("pixels")) {
+        qWarning("Stamp JSON does not contain pixel data");
+        return;
+    }
+
+    QJsonArray pixelArray = stampJson["pixels"].toArray();
+
+    for (int i = 0; i < pixelArray.size(); ++i) {
+        QJsonArray rowArray = pixelArray[i].toArray();
+        for (int j = 0; j < rowArray.size(); ++j) {
+            int targetX = i + offsetX;
+            int targetY = j + offsetY;
+
+            if (targetX >= 0 && targetX < pixels.size() && targetY >= 0 && targetY < pixels[0].size()) {
+                QJsonObject pixelJson = rowArray[j].toObject();
+                QColor color(
+                    pixelJson["red"].toInt(),
+                    pixelJson["green"].toInt(),
+                    pixelJson["blue"].toInt(),
+                    pixelJson["alpha"].toInt()
+                    );
+                pixels[targetX][targetY].setColor(color);
+            }
+        }
+    }
+
+    update();  // Repaint canvas
 }
 
 void Canvas::saveCanvas() {

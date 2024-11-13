@@ -49,8 +49,8 @@ void ShapeTool::drawShape(std::vector<std::vector<Pixel>>& pixels) {
 }
 
 void ShapeTool::drawEllipse(int startX, int startY, int endX, int endY, std::vector<std::vector<Pixel>>& pixels) {
-    int a = (endX - startX) / 2;  // 半长轴
-    int b = (endY - startY) / 2;  // 半短轴
+    int a = (endX - startX) / 2;
+    int b = (endY - startY) / 2;
     int centerX = startX + a;
     int centerY = startY + b;
 
@@ -100,7 +100,7 @@ void ShapeTool::drawTriangle(int startX, int startY, int endX, int endY, std::ve
     int baseMidX = (startX + endX) / 2;
 
     for (int x = startX; x <= endX; ++x) {
-        pixels[x][endY].setColor(color);  // 底边
+        pixels[x][endY].setColor(color);
     }
 
     float slopeLeft = static_cast<float>(endY - startY) / (baseMidX - startX);

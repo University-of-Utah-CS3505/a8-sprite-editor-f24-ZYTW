@@ -8,13 +8,20 @@
 #include <QVector>
 #include <QMouseEvent>
 #include <QPainter>
+#include <QRect>
 #include <QPoint>
 #include <vector>
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QJsonValue>
+#include <QFileDialog>
+#include <QPainter>
+#include <QMouseEvent>
 
 #include "Pixel.h"
-#include "ShapeTool.h"
 #include "Tool.h"
 #include "FileHandler.h"
+#include "ShapeTool.h"
 
 
 class Canvas : public QWidget
@@ -30,9 +37,16 @@ public:
     QImage getCurrentSprite() ;
 
     void setTool(Tool* tool);
+    void startSelectingStamp();
+    void stopSelectingStamp();
+    std::vector<std::vector<Pixel>> getSelectedPixels() const;
+    void applyStamp(const QJsonObject& stampJson, int offsetX, int offsetY);
+    void setCurrentStamp(const QJsonObject& stampJson);
+
 
 signals:
     void updateCanvasDisplay(QPixmap);
+    void stampSelected(const QImage& stamp);
 
 public slots:
     void setCanvasSize(int size);
@@ -54,9 +68,16 @@ private:
     int framesPerSecond;
     int penSize;
     std::vector<std::vector<Pixel>> pixels;
+    //For shapeTool
     bool isDragging = false;
     QPoint startPoint;
     QPoint endPoint;
+    //For stampGallery
+    bool selectingStamp = false;
+    QPoint selectionStart;
+    QPoint selectionEnd;
+    QRect selectedArea;
+    QJsonObject currentStampJson;
 
     void initializePixels();
     FileHandler fileHandler;

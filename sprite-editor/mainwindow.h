@@ -12,6 +12,8 @@
 #include <StampGallery.h>
 #include <SymmetryTool.h>
 #include <QImage>
+#include <QFileDialog>
+#include <QDir>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -38,6 +40,8 @@ private slots:
     void setShapeColor(QColor color);
     void setSymmetryColor(QColor color);
     void updateToolButtonHighlight(QPushButton* selectedButton);
+    void onSelectStampButtonClicked();
+    void applyStampToCanvas(const QJsonObject& stampJson);
 
 public slots:
     // Connecting spot for all connections between slots and signals

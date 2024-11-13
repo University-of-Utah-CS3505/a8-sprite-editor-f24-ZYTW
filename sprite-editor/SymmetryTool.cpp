@@ -4,12 +4,12 @@ SymmetryTool::SymmetryTool(QObject* parent)
     : Tool(parent) {}
 
 void SymmetryTool::useTool(int x, int y, std::vector<std::vector<Pixel>>& pixels) {
-    // 绘制当前点
+    // draw this point
     if (x >= 0 && x < pixels.size() && y >= 0 && y < pixels[0].size()) {
         pixels[x][y].setColor(color);
     }
 
-    // 绘制水平对称点
+    // Draw the symmetric point
     int mirroredX = canvasSize - 1 - x;
     if (mirroredX >= 0 && mirroredX < pixels.size() && y >= 0 && y < pixels[0].size()) {
         pixels[mirroredX][y].setColor(color);
