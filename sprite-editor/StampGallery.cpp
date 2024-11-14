@@ -76,16 +76,12 @@ void StampGallery::saveStamp(const std::vector<std::vector<Pixel>>& stampPixels)
         }
         pixelArray.append(rowArray);
     }
-
     stampJson["pixels"] = pixelArray;
-    stampJson["name"] = stampName;  // Save the stamp's name in JSON
+    stampJson["name"] = stampName;
 
     QJsonDocument saveDoc(stampJson);
     file.write(saveDoc.toJson());
     file.close();
-
-    qDebug() << "Stamp saved to:" << file.fileName();
-    qDebug() << "saveStamp called with name:" << stampName;
 }
 
 void StampGallery::loadStamps() {
@@ -136,18 +132,18 @@ void StampGallery::displayStampFromJson(const QJsonObject& json) {
     int height = pixelArray.size();
     int width = height > 0 ? pixelArray[0].toArray().size() : 0;
 
-    QImage stampImage(width, height, QImage::Format_ARGB32);
-    for (int i = 0; i < height; ++i) {
-        QJsonArray rowArray = pixelArray[i].toArray();
-        for (int j = 0; j < width; ++j) {
-            QJsonObject pixelJson = rowArray[j].toObject();
+    QImage stampImage(height, width, QImage::Format_ARGB32);
+    for (int y = 0; y < height; ++y) {
+        QJsonArray rowArray = pixelArray[y].toArray();
+        for (int x = 0; x < width; ++x) {
+            QJsonObject pixelJson = rowArray[x].toObject();
             QColor color(
                 pixelJson["red"].toInt(),
                 pixelJson["green"].toInt(),
                 pixelJson["blue"].toInt(),
                 pixelJson["alpha"].toInt()
                 );
-            stampImage.setPixelColor(j, i, color);
+            stampImage.setPixelColor(y, x, color); // Correctly map x, y
         }
     }
 
