@@ -15,8 +15,22 @@
 class Pixel
 {
 public:
+    /**
+     * @brief Pixel
+     * Constructor for a Pixel object with specific color, default: white.
+     * @param sets the default color to white.
+     */
     Pixel(QColor color = QColor(Qt::white));
+    /**
+     * @brief setColor
+     * Sets the color of the pixel.
+     * @param color The new color to be assigned to the pixel.
+    **/
     void setColor(QColor color);
+    /**
+     * @brief getColor
+     * Gets the color of the pixel.
+    **/
     QColor getColor() const;
 
 private:
