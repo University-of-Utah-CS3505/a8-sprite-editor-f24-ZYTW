@@ -295,8 +295,7 @@ void MainWindow::canvasSizeDialog() {
 
 void MainWindow::updateCanvasDisplay(QPixmap pixmap)
 {
-    pixmap = pixmap.scaled(ui->canvas->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    ui->canvas->setPixmap(pixmap);
+    canvas->update();
     ui->canvas->setAlignment(Qt::AlignCenter);
 }
 

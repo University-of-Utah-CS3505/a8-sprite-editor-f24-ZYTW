@@ -157,8 +157,12 @@ void Canvas::loadCanvas() {
 // MouseEvent and Paint
 void Canvas::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
-    //??
-    painter.fillRect(this->rect(), Qt::white);
+    //painter.fillRect(this->rect(), Qt::white);
+
+    int gridWidth = pixels.size() * 10;
+    int gridHeight = pixels.size() * 10;
+
+    painter.fillRect(0, 0, gridWidth, gridHeight, Qt::white);
 
     for (int i = 0; i < pixels.size(); ++i) {
         for (int j = 0; j < pixels[i].size(); ++j) {
