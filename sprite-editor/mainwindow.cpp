@@ -164,20 +164,20 @@ void MainWindow::setUpConnections()
         QListWidgetItem *selectedItem = ui->deletedFrameListWidget->currentItem();
         if (selectedItem) {
             int originalIndex = selectedItem->data(Qt::UserRole).toInt();
-
             auto deletedFrames = frameManager->getDeletedFrames();
+
             auto it = std::find_if(deletedFrames.begin(), deletedFrames.end(),
-                                   [&](const QPair<int, QImage> &pair) {
-                                       return pair.first == originalIndex;
-                                   });
+                                    [&](const QPair<int, QImage> &pair) {
+                                        return pair.first == originalIndex;
+                                    });
 
             if (it != deletedFrames.end()) {
                 const QImage &deletedFrameImage = it->second;
                 frameManager->restoreFrame(originalIndex, deletedFrameImage);
 
                 // Insert restored frame into frameListWidget at the correct position
-                QListWidgetItem *restoredItem = new QListWidgetItem("Frame " + QString::number(originalIndex));
-                ui->frameListWidget->insertItem(originalIndex - 1, restoredItem);
+                int insertPosition = (originalIndex > ui->frameListWidget->count()) ? ui->frameListWidget->count() : originalIndex - 1;
+                QListWidgetItem *restoredItem = new QListWidgetItem("Frame " + QString::number(insertPosition + 1));                    ui->frameListWidget->insertItem(insertPosition, restoredItem);
 
                 // Remove from deletedFrameListWidget
                 delete ui->deletedFrameListWidget->takeItem(ui->deletedFrameListWidget->row(selectedItem));
@@ -189,11 +189,11 @@ void MainWindow::setUpConnections()
 
                 // Adjust spinbox maximum and selected index
                 ui->spinBoxControl->setMaximum(ui->frameListWidget->count());
-                selectedIndex = originalIndex;
+                selectedIndex = insertPosition + 1;
                 ui->spinBoxControl->setValue(selectedIndex);
             } else {
                 qDebug() << "Could not find frame in deletedFrames for restoration.";
-            }
+             }
         }
     });
     connect(ui->deletedFrameListWidget, &QListWidget::itemClicked, this, [&](QListWidgetItem *item) {

@@ -2,7 +2,7 @@
 
 FrameDisplayWindow::FrameDisplayWindow(QWidget *parent)
     : QWidget(parent), frameLabel(new QLabel(this)) {
-    frameLabel = new QLabel(this);
+
     frameLabel->setAlignment(Qt::AlignCenter);
 
     // Layout to manage frameLabel in the window

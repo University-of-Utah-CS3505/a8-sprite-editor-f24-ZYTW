@@ -24,10 +24,7 @@ void FrameManager::removeFrame(int index) {
             currentFrameIndex = frames.size() - 1;
         }
 
-        // Renumber deletedFrames and frames to prevent index mismatches
-        for (int i = 0; i < frames.size(); ++i) {
-            frames[i] = frames[i].copy();  // Reassign to ensure correct ordering
-        }
+
 
         emit frameChanged(frames.isEmpty() ? QImage() : frames[qMax(0, currentFrameIndex)]);
     } else {
@@ -38,22 +35,20 @@ void FrameManager::removeFrame(int index) {
 void FrameManager::restoreFrame(int originalIndex, const QImage &frame) {
     int zeroBasedIndex = originalIndex - 1;  // Convert to 0-based index
 
-    if (zeroBasedIndex >= 0 && zeroBasedIndex <= frames.size()) {
-        frames.insert(zeroBasedIndex, frame.copy());  // Insert an exact copy at the correct position
+    // Insert at the closest position within bounds if the index is now invalid
+    int insertPosition = (zeroBasedIndex >= frames.size()) ? frames.size() : zeroBasedIndex;
+    frames.insert(insertPosition, frame);
 
-        // Remove the restored frame from deletedFrames
-        auto it = std::find_if(deletedFrames.begin(), deletedFrames.end(),
-                               [&](const QPair<int, QImage> &pair) {
-                                   return pair.first == originalIndex;
-                               });
-        if (it != deletedFrames.end()) {
+    // Remove the restored frame from deletedFrames list
+    auto it = std::find_if(deletedFrames.begin(), deletedFrames.end(),
+                           [&](const QPair<int, QImage> &pair) {
+                               return pair.first == originalIndex;
+                           });
+    if (it != deletedFrames.end()) {
             deletedFrames.erase(it);
-        }
-
-        emit frameChanged(frame);  // Update display
-    } else {
-        qDebug() << "Invalid original index" << originalIndex << "for restoration.";
     }
+
+    emit frameChanged(frame);  // Update display
 }
 void FrameManager::setFPS(int fps) {
     if (fps > 0) {
