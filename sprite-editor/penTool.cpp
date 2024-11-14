@@ -4,12 +4,12 @@
  * Assignment Name: A8: Sprite Editor Implementation
  * Descrption: In this project, we create an intuitive and versatile pixel art tool designed for creating and editing sprites.
  *
- * Reviewer: WYNTER KIM
+ * Reviewer: TERESA PARK
  */
-#include "Eraser.h"
+#include "penTool.h"
 
-void Eraser::useTool(int x, int y, std::vector<std::vector<Pixel>>& pixels) {
+void Pen::useTool(int x, int y, std::vector<std::vector<Pixel>>& pixels) {
     if (x >= 0 && x < pixels.size() && y >= 0 && y < pixels[0].size()) {
-        pixels[x][y].setColor(Qt::white);
+        pixels[x][y].setColor(color);
     }
 }

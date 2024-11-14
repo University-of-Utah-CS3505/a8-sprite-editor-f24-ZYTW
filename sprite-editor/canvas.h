@@ -29,7 +29,7 @@
 #include "Pixel.h"
 #include "Tool.h"
 #include "FileHandler.h"
-#include "ShapeTool.h"
+#include "shapeTool.h"
 
 
 class Canvas : public QWidget
@@ -42,7 +42,8 @@ public:
     QVector<QImage> getFrames();
     QImage getCanvasImage() const;
     // Stamp Gallery
-    QImage getCurrentSprite() ;
+    QImage getCurrentSprite();
+    int getCanvasSize() const;
 
     void setTool(Tool* tool);
     void startSelectingStamp();

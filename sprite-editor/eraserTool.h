@@ -6,8 +6,8 @@
  *
  * Reviewer: WYNTER KIM
  */
-#ifndef ERASER_H
-#define ERASER_H
+#ifndef ERASERTOOL_H
+#define ERASERTOOL_H
 
 #include "Tool.h"
 #include "Pixel.h"
@@ -19,4 +19,4 @@ public:
     void useTool(int x, int y, std::vector<std::vector<Pixel>>& pixels) override;
 };
 
-#endif // ERASER_H
+#endif // ERASERTOOL_H

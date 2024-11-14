@@ -6,7 +6,8 @@
  *
  * Reviewer: ZHENGXI ZHANG
  */
-#include "SymmetryTool.h"
+#include "symmetryTool.h"
+#include "qdebug.h"
 
 SymmetryTool::SymmetryTool(QObject* parent)
     : Tool(parent) {}
@@ -26,6 +27,7 @@ void SymmetryTool::useTool(int x, int y, std::vector<std::vector<Pixel>>& pixels
 
 void SymmetryTool::setCanvasSize(int size) {
     canvasSize = size;
+    qDebug() << "SymmetryTool canvas size set to:" << canvasSize;
 }
 
 void SymmetryTool::setColor(QColor newColor) {

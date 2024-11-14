@@ -21,7 +21,6 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
-#include <QBuffer>
 #include <QListWidgetItem>
 #include <QLabel>
 #include <QPixmap>

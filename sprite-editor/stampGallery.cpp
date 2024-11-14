@@ -6,7 +6,7 @@
  *
  * Reviewer: ZHENGXI ZHANG, YINHAO CHEN
  */
-#include "StampGallery.h"
+#include "stampGallery.h"
 
 StampGallery::StampGallery(QWidget *parent)
     : QWidget(parent), stampList(new QListWidget) {
@@ -93,6 +93,7 @@ void StampGallery::saveStamp(const std::vector<std::vector<Pixel>>& stampPixels)
 }
 
 void StampGallery::loadStamps() {
+    // Same strategy as loadFile.
     QString stampsPath = QApplication::applicationDirPath() + "/stamps";
     QDir resourceDir(stampsPath);
     qDebug() << "Loading stamps from path:" << stampsPath;
@@ -139,7 +140,7 @@ void StampGallery::displayStampFromJson(const QJsonObject& json) {
     QJsonArray pixelArray = json["pixels"].toArray();
     int height = pixelArray.size();
     int width = height > 0 ? pixelArray[0].toArray().size() : 0;
-
+    // Display it with pixel location
     QImage stampImage(height, width, QImage::Format_ARGB32);
     for (int y = 0; y < height; ++y) {
         QJsonArray rowArray = pixelArray[y].toArray();
@@ -151,7 +152,7 @@ void StampGallery::displayStampFromJson(const QJsonObject& json) {
                 pixelJson["blue"].toInt(),
                 pixelJson["alpha"].toInt()
                 );
-            stampImage.setPixelColor(y, x, color); // Correctly map x, y
+            stampImage.setPixelColor(y, x, color);
         }
     }
 
@@ -161,6 +162,7 @@ void StampGallery::displayStampFromJson(const QJsonObject& json) {
 
 void StampGallery::updateStampList() {
     stampList->clear();
+    // Loop through the list
     for (auto it = stamps.begin(); it != stamps.end(); ++it) {
         stampList->addItem(it.key());
     }

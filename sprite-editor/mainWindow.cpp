@@ -6,8 +6,8 @@
  *
  * Reviewer: WYNTER KIM, TERESA PARK, YINHAO CHEN, ZHENGXI ZHANG
  */
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include "mainWindow.h"
+#include "ui_mainWindow.h"
 #include <QSpinBox>
 #include <QGridLayout>
 
@@ -296,6 +296,7 @@ void MainWindow::canvasSizeDialog() {
         canvas->update();
         ui->canvasDialog->hide();
         setEnabled(true);
+        symmetryTool->setCanvasSize(canvas->getCanvasSize());
     } else {
         QMessageBox::warning(this, "Invalid Input", "Please enter a value between 1 and 64.");
     }

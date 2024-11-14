@@ -12,7 +12,7 @@
 #include <QJsonArray>
 #include <QColor>
 
-#include "filehandler.h"
+#include "fileHandler.h"
 
 void FileHandler::saveFile(const QString& path, int framesPerSecond, int canvasSize, const std::vector<std::vector<Pixel>>& pixels) {
     QFile file(path);

@@ -6,7 +6,7 @@
  *
  * Reviewer: YINHAO CHEN, ZHENGXI ZHANG
  */
-#include "FrameManager.h"
+#include "frameManager.h"
 #include <QImage>
 #include <QDebug>
 

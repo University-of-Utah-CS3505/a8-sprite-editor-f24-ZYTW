@@ -23,7 +23,7 @@ public:
     void setColor(QColor color) override;
 
 private:
-    int canvasSize = 30; //Fix canvas size, can be modify if needed.
+    int canvasSize = 48;
 };
 
 #endif // SYMMETRYTOOL_H

@@ -4,10 +4,10 @@
  * Assignment Name: A8: Sprite Editor Implementation
  * Descrption: In this project, we create an intuitive and versatile pixel art tool designed for creating and editing sprites.
  *
- * Reviewer: WYNTER KIM, TERESA PARK, YINHAO CHEN, ZHENGXI ZHANG
+ * Reviewer: TERESA PARK
  */
-#ifndef PEN_H
-#define PEN_H
+#ifndef PENTOOL_H
+#define PENTOOL_H
 
 #include "Tool.h"
 #include "Pixel.h"
@@ -18,4 +18,4 @@ public:
     Pen(QColor color) { this->color = color; }
     void useTool(int x, int y, std::vector<std::vector<Pixel>>& pixels) override;};
 
-#endif // PEN_H
+#endif // PENTOOL_H

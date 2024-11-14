@@ -12,18 +12,18 @@
 #include <QMainWindow>
 #include <QMessageBox>
 #include <canvas.h>
-#include "Pen.h"
-#include "Eraser.h"
-#include "Colorpalette.h"
-#include <ShapeTool.h>
-#include <FrameManager.h>
-#include <StampGallery.h>
-#include <SymmetryTool.h>
+#include "penTool.h"
+#include "eraserTool.h"
+#include "colorPalette.h"
+#include "shapeTool.h"
+#include "frameManager.h"
+#include "stampGallery.h"
+#include "symmetryTool.h"
 #include <QImage>
 #include <QFileDialog>
 #include <QDir>
-#include <animationwindow.h>
-#include <framedisplaywindow.h>
+#include <animationWindow.h>
+#include <frameDisplayWindow.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {

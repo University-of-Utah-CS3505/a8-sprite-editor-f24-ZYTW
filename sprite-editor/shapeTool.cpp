@@ -6,7 +6,7 @@
  *
  * Reviewer: ZHENGXI ZHANG
  */
-#include "ShapeTool.h"
+#include "shapeTool.h"
 #include <QDebug>
 #include <cmath>
 

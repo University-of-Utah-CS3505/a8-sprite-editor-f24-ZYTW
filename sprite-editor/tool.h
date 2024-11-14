@@ -20,8 +20,17 @@ class Tool : public QObject {
 public:
     explicit Tool(QObject* parent = nullptr) : QObject(parent) {}
     virtual ~Tool() = default;
-
+    /**
+     * @brief Can let the user use tool at the mouseLocation
+     * @param x postion
+     * @param y
+     * @param pixels
+     */
     virtual void useTool(int x, int y, std::vector<std::vector<Pixel>>& pixels) = 0;
+    /**
+     * @brief SetColor for the tool
+     * @param color
+     */
     virtual void setColor(QColor color) { this->color = color; }
     QColor getColor() const { return color; }
 

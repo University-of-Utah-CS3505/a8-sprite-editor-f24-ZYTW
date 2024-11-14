@@ -9,39 +9,39 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    FrameManager.cpp \
-    ShapeTool.cpp \
-    StampGallery.cpp \
-    SymmetryTool.cpp \
-    animationwindow.cpp \
+    animationWindow.cpp \
     canvas.cpp \
-    colorpalette.cpp \
-    eraser.cpp \
-    filehandler.cpp \
-    framedisplaywindow.cpp \
+    colorPalette.cpp \
+    eraserTool.cpp \
+    fileHandler.cpp \
+    frameDisplayWindow.cpp \
+    frameManager.cpp \
     main.cpp \
-    mainwindow.cpp \
-    pen.cpp \
-    pixel.cpp
+    mainWindow.cpp \
+    penTool.cpp \
+    pixel.cpp \
+    shapeTool.cpp \
+    stampGallery.cpp \
+    symmetryTool.cpp
 
 HEADERS += \
-    FrameManager.h \
-    ShapeTool.h \
-    StampGallery.h \
-    SymmetryTool.h \
-    animationwindow.h \
+    animationWindow.h \
     canvas.h \
-    colorpalette.h \
-    eraser.h \
-    filehandler.h \
-    framedisplaywindow.h \
-    mainwindow.h \
-    pen.h \
+    colorPalette.h \
+    eraserTool.h \
+    fileHandler.h \
+    frameDisplayWindow.h \
+    frameManager.h \
+    mainWindow.h \
+    penTool.h \
     pixel.h \
+    shapeTool.h \
+    stampGallery.h \
+    symmetryTool.h \
     tool.h
 
 FORMS += \
-    mainwindow.ui
+    mainWindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

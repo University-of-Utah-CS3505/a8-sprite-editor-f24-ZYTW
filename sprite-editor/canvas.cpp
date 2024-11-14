@@ -1,4 +1,13 @@
+/**
+ * Name: WYNTER KIM, TERESA PARK, YINHAO CHEN, ZHENGXI ZHANG
+ * Course: CS 3505 Fall2024
+ * Assignment Name: A8: Sprite Editor Implementation
+ * Descrption: In this project, we create an intuitive and versatile pixel art tool designed for creating and editing sprites.
+ *
+ * Reviewer: WYNTER KIM, TERESA PARK
+ */
 #include "Canvas.h"
+#include "symmetryTool.h"
 #include "qjsonobject.h"
 
 Canvas::Canvas(QWidget *parent): QWidget(parent), currentTool(nullptr)
@@ -37,6 +46,10 @@ void Canvas::setCanvasSize(int size) {
     setFixedSize(canvasSize * tileSize, canvasSize * tileSize);
     initializePixels();
     update();
+}
+
+int Canvas::getCanvasSize() const {
+    return canvasSize;
 }
 
 void Canvas::setFramesPerSecond(int fps)
