@@ -17,6 +17,8 @@
 #include <QListWidgetItem>
 #include <QLabel>
 #include <QPixmap>
+#include <QInputDialog>
+#include <QLineEdit>
 
 class StampGallery : public QWidget {
     Q_OBJECT
@@ -30,8 +32,15 @@ signals:
     void stampSelected(const QImage &stamp);
 
 public slots:
+    /**
+     * @brief It will save the Stamp selected
+     * @param stampPixels
+     */
     void saveStamp(const std::vector<std::vector<Pixel>>& stampPixels);
-    void loadStampsFromResource();
+    /**
+     * @brief Load the Stamp from file
+     */
+    void loadStamps();
 
 private slots:
     void selectStamp();
@@ -39,8 +48,14 @@ private slots:
 private:
     QListWidget *stampList;
     QMap<QString, QImage> stamps;
+    /**
+     * @brief Display the json stamp file
+     * @param json
+     */
     void displayStampFromJson(const QJsonObject& json);
-
+    /**
+     * @brief it will update the list in StampGallery window
+     */
     void updateStampList();
 };
 

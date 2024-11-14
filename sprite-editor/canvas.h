@@ -47,6 +47,7 @@ public:
 signals:
     void updateCanvasDisplay(QPixmap);
     void stampSelected(const QImage& stamp);
+    void toolCleared();
 
 public slots:
     void setCanvasSize(int size);
@@ -55,6 +56,7 @@ public slots:
 
     void saveCanvas();
     void loadCanvas();
+    void setStamp(const QImage &stamp);
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -78,6 +80,8 @@ private:
     QPoint selectionEnd;
     QRect selectedArea;
     QJsonObject currentStampJson;
+    QImage currentStamp;
+    QPoint currentStampPosition;
 
     void initializePixels();
     FileHandler fileHandler;

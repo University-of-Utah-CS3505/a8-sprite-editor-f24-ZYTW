@@ -31,7 +31,28 @@ void StampGallery::saveStamp(const std::vector<std::vector<Pixel>>& stampPixels)
         dir.mkpath(".");
     }
 
-    QString fileName = QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss") + ".stamp";
+    // We want to get a single name from user, just using QInputDialog.
+    bool ok;
+    QString userInputName = QInputDialog::getText(
+        this,
+        tr("Save Stamp"),
+        tr("Enter a name for the stamp:"),
+        QLineEdit::Normal,
+        QString(),
+        &ok
+        );
+    // user cancel, just return.
+    if (!ok) {
+        qDebug() << "User canceled stamp saving.";
+        return;
+    }
+
+    // Use default name if input is empty, "Stamp_hhmmss"
+    QString stampName = userInputName.trimmed().isEmpty()
+                            ? "stamp_" + QDateTime::currentDateTime().toString("hhmmss")
+                            : userInputName.trimmed();
+
+    QString fileName = stampName + ".stamp";
     QFile file(dir.filePath(fileName));
 
     if (!file.open(QIODevice::WriteOnly)) {
@@ -41,7 +62,7 @@ void StampGallery::saveStamp(const std::vector<std::vector<Pixel>>& stampPixels)
 
     QJsonObject stampJson;
     QJsonArray pixelArray;
-
+    // Using the same strategy as save files.
     for (const auto& row : stampPixels) {
         QJsonArray rowArray;
         for (const auto& pixel : row) {
@@ -57,27 +78,29 @@ void StampGallery::saveStamp(const std::vector<std::vector<Pixel>>& stampPixels)
     }
 
     stampJson["pixels"] = pixelArray;
+    stampJson["name"] = stampName;  // Save the stamp's name in JSON
 
     QJsonDocument saveDoc(stampJson);
     file.write(saveDoc.toJson());
     file.close();
 
     qDebug() << "Stamp saved to:" << file.fileName();
-    //emit stampSaved(file.fileName());
+    qDebug() << "saveStamp called with name:" << stampName;
 }
 
-void StampGallery::loadStampsFromResource() {
-    QDir resourceDir(":/stamp_gallery");
-
+void StampGallery::loadStamps() {
+    QString stampsPath = QApplication::applicationDirPath() + "/stamps";
+    QDir resourceDir(stampsPath);
+    qDebug() << "Loading stamps from path:" << stampsPath;
     if (!resourceDir.exists()) {
-        qWarning() << "Stamp resource directory does not exist.";
+        qWarning() << "Stamp resource directory does not exist:" << stampsPath;
         return;
     }
 
     QStringList stampFiles = resourceDir.entryList(QStringList() << "*.stamp", QDir::Files);
 
     for (const QString& fileName : stampFiles) {
-        QString fullPath = ":/stamp_gallery/" + fileName;
+        QString fullPath = resourceDir.filePath(fileName);
         QFile file(fullPath);
 
         if (file.open(QIODevice::ReadOnly)) {
@@ -89,24 +112,34 @@ void StampGallery::loadStampsFromResource() {
             qWarning() << "Failed to open stamp file:" << fullPath;
         }
     }
+
+    updateStampList();
 }
+
 void StampGallery::selectStamp() {
-    emit stampSelected(getSelectedStamp());
+    QImage selectedStamp = getSelectedStamp();
+
+    if (!selectedStamp.isNull()) {
+        emit stampSelected(selectedStamp);
+    } else {
+        qWarning() << "No stamp selected.";
+    }
 }
 
 void StampGallery::displayStampFromJson(const QJsonObject& json) {
-    if (!json.contains("canvasSize") || !json.contains("pixels")) {
+    if (!json.contains("pixels")) {
         qWarning() << "Invalid stamp JSON format.";
         return;
     }
 
-    int canvasSize = json["canvasSize"].toInt();
     QJsonArray pixelArray = json["pixels"].toArray();
+    int height = pixelArray.size();
+    int width = height > 0 ? pixelArray[0].toArray().size() : 0;
 
-    QImage stampImage(canvasSize, canvasSize, QImage::Format_ARGB32);
-    for (int i = 0; i < pixelArray.size(); ++i) {
+    QImage stampImage(width, height, QImage::Format_ARGB32);
+    for (int i = 0; i < height; ++i) {
         QJsonArray rowArray = pixelArray[i].toArray();
-        for (int j = 0; j < rowArray.size(); ++j) {
+        for (int j = 0; j < width; ++j) {
             QJsonObject pixelJson = rowArray[j].toObject();
             QColor color(
                 pixelJson["red"].toInt(),
@@ -114,24 +147,12 @@ void StampGallery::displayStampFromJson(const QJsonObject& json) {
                 pixelJson["blue"].toInt(),
                 pixelJson["alpha"].toInt()
                 );
-            stampImage.setPixelColor(i, j, color);
+            stampImage.setPixelColor(j, i, color);
         }
     }
 
-    // Create a QLabel to hold the stamp preview
-    QLabel* stampPreview = new QLabel(this);
-    stampPreview->setPixmap(QPixmap::fromImage(stampImage.scaled(100, 100, Qt::KeepAspectRatio)));
-    stampPreview->setAlignment(Qt::AlignCenter);
-    stampPreview->setStyleSheet("border: 1px solid black; margin: 5px;");
-
-    // Add stamp preview to the gallery
-    QVBoxLayout* galleryLayout = static_cast<QVBoxLayout*>(layout());
-    if (!galleryLayout) {
-        galleryLayout = new QVBoxLayout(this);
-        setLayout(galleryLayout);
-    }
-    galleryLayout->addWidget(stampPreview);
-
+    QString stampName = json["name"].toString();
+    stamps.insert(stampName, stampImage);
 }
 
 void StampGallery::updateStampList() {

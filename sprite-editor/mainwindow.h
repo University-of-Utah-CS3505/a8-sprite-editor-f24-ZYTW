@@ -49,15 +49,13 @@ private slots:
 public slots:
     // Connecting spot for all connections between slots and signals
     void setUpConnections();
-
     // Popup on first screen to set canvasSize
     void canvasSizeDialog();
     void updateCanvasDisplay(QPixmap pixmap);
 
-    // Change FPS Speed based on the users' selection
-    void updateFPS();
-
     void displayFrame(const QImage &frame);
+
+    void updateStampPreview(const QImage &stamp);
 
 private:
     Ui::MainWindow *ui;
@@ -69,12 +67,13 @@ private:
     Pen* penTool;
     Eraser* eraserTool;
     ColorPalette* colorPalette;
+    ShapeTool* shapeTool;
 
-    //
+    //Symmerty, stamp and Frame part
     SymmetryTool *symmetryTool;
     StampGallery *stampGallery;
     FrameManager *frameManager;
-    ShapeTool* shapeTool;
+    QLabel *stampPreviewLabel;
     AnimationWindow* animationWindow;
     FrameDisplayWindow* frameDisplayWindow;
     int selectedIndex = 1;

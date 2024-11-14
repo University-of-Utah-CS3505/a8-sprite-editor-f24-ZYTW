@@ -49,69 +49,97 @@ void ShapeTool::drawShape(std::vector<std::vector<Pixel>>& pixels) {
 }
 
 void ShapeTool::drawEllipse(int startX, int startY, int endX, int endY, std::vector<std::vector<Pixel>>& pixels) {
-    int a = (endX - startX) / 2;
-    int b = (endY - startY) / 2;
+    // Calculate ellipse parameters
+    int a = abs((endX - startX) / 2);  // Semi-major axis
+    int b = abs((endY - startY) / 2);  // Semi-minor axis
     int centerX = startX + a;
     int centerY = startY + b;
 
-    int x = 0;
-    int y = b;
-    int a2 = a * a;
-    int b2 = b * b;
-    int d1 = b2 - a2 * b + 0.25 * a2;
+    float dx, dy, d1, d2;
+    int x = 0, y = b;
 
-    while (b2 * x <= a2 * y) {
+    // 1st D parameter
+    d1 = (b * b) - (a * a * b) + (0.25 * a * a);
+    dx = 2 * b * b * x;
+    dy = 2 * a * a * y;
+
+    // Top to midpoint Region1:
+    while (dx < dy) {
         drawSymmetricPixels(centerX, centerY, x, y, pixels);
         if (d1 < 0) {
-            d1 += b2 * (2 * x + 3);
+            x++;
+            dx += 2 * b * b;
+            d1 += dx + (b * b);
         } else {
-            d1 += b2 * (2 * x + 3) + a2 * (-2 * y + 2);
+            x++;
             y--;
+            dx += 2 * b * b;
+            dy -= 2 * a * a;
+            d1 += dx - dy + (b * b);
         }
-        x++;
     }
 
-    int d2 = b2 * (x + 0.5) * (x + 0.5) + a2 * (y - 1) * (y - 1) - a2 * b2;
+    // 2nd D parameter
+    d2 = ((b * b) * ((x + 0.5) * (x + 0.5))) +
+         ((a * a) * ((y - 1) * (y - 1))) -
+         (a * a * b * b);
 
+    // midpoint to bottom Region2:
     while (y >= 0) {
         drawSymmetricPixels(centerX, centerY, x, y, pixels);
         if (d2 > 0) {
-            d2 += a2 * (-2 * y + 3);
+            y--;
+            dy -= 2 * a * a;
+            d2 += (a * a) - dy;
         } else {
-            d2 += b2 * (2 * x + 2) + a2 * (-2 * y + 3);
+            y--;
             x++;
+            dx += 2 * b * b;
+            dy -= 2 * a * a;
+            d2 += dx - dy + (a * a);
         }
-        y--;
     }
 }
 
 void ShapeTool::drawSymmetricPixels(int cx, int cy, int x, int y, std::vector<std::vector<Pixel>>& pixels) {
-    if (cx + x >= 0 && cx + x < pixels.size() && cy + y >= 0 && cy + y < pixels[0].size())
-        pixels[cx + x][cy + y].setColor(color);
-    if (cx - x >= 0 && cx - x < pixels.size() && cy + y >= 0 && cy + y < pixels[0].size())
-        pixels[cx - x][cy + y].setColor(color);
-    if (cx + x >= 0 && cx + x < pixels.size() && cy - y >= 0 && cy - y < pixels[0].size())
-        pixels[cx + x][cy - y].setColor(color);
-    if (cx - x >= 0 && cx - x < pixels.size() && cy - y >= 0 && cy - y < pixels[0].size())
-        pixels[cx - x][cy - y].setColor(color);
+    const std::vector<std::pair<int, int>> offsets = {
+        {x, y}, {-x, y}, {x, -y}, {-x, -y}
+    };
+    for (const auto& offset : offsets) {
+        int targetX = cx + offset.first;
+        int targetY = cy + offset.second;
+        if (targetX >= 0 && targetX < pixels.size() && targetY >= 0 && targetY < pixels[0].size()) {
+            pixels[targetX][targetY].setColor(color);
+        }
+    }
 }
 
 void ShapeTool::drawTriangle(int startX, int startY, int endX, int endY, std::vector<std::vector<Pixel>>& pixels) {
+    //Midpoint for the based
     int baseMidX = (startX + endX) / 2;
+    int height = endY - startY;
 
-    for (int x = startX; x <= endX; ++x) {
-        pixels[x][endY].setColor(color);
+    for (int y = 0; y <= height; ++y) {
+        int leftX = baseMidX - y;
+        int rightX = baseMidX + y;
+
+        // Draw the left edge
+        if (leftX >= 0 && leftX < pixels.size() && (startY + y) >= 0 && (startY + y) < pixels[0].size()) {
+            pixels[leftX][startY + y].setColor(color);
+        }
+
+        // Draw the right edge
+        if (rightX >= 0 && rightX < pixels.size() && (startY + y) >= 0 && (startY + y) < pixels[0].size()) {
+            pixels[rightX][startY + y].setColor(color);
+        }
     }
 
-    float slopeLeft = static_cast<float>(endY - startY) / (baseMidX - startX);
-    float slopeRight = static_cast<float>(endY - startY) / (endX - baseMidX);
-
-    for (int y = startY; y <= endY; ++y) {
-        int leftX = baseMidX - static_cast<int>((y - startY) / slopeLeft);
-        int rightX = baseMidX + static_cast<int>((y - startY) / slopeRight);
-        if (leftX >= 0 && leftX < pixels.size())
-            pixels[leftX][y].setColor(color);
-        if (rightX >= 0 && rightX < pixels.size())
-            pixels[rightX][y].setColor(color);
+    // baseline should close the triangle.
+    int finalLeftX = baseMidX - height;
+    int finalRightX = baseMidX + height;
+    for (int x = finalLeftX; x <= finalRightX; ++x) {
+        if (x >= 0 && x < pixels.size() && endY >= 0 && endY < pixels[0].size()) {
+            pixels[x][endY].setColor(color);
+        }
     }
 }

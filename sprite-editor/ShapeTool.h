@@ -20,9 +20,40 @@ private:
     QPoint startPoint;
     bool isDragging;
     QPoint endPoint;
+
     void drawShape(std::vector<std::vector<Pixel>>& pixels);
+    /**
+     * @brief drawSymmetricPixels
+     *  Draws symmetric pixels on the canvas based on a center point and an offset.
+     * @param cx
+     * @param cy
+     * @param x
+     * @param y
+     * @param pixels
+     */
     void drawSymmetricPixels(int cx, int cy, int x, int y, std::vector<std::vector<Pixel>>& pixels);
+    /**
+     * @brief drawEllipse
+     *  This method was based on the Midpoint ellipse drawing algorithm in
+     *  https://www.geeksforgeeks.org/midpoint-ellipse-drawing-algorithm/
+     *  and also wrote based on midptellipse in the C++ implementation in that page.
+     * @param startX
+     * @param startY
+     * @param endX
+     * @param endY
+     * @param pixels
+     */
     void drawEllipse(int startX, int startY, int endX, int endY, std::vector<std::vector<Pixel>>& pixels);
+    /**
+     * @brief drawTriangle
+     * Based on the Triangle drawing but we only need to frame:
+     * https://www.geeksforgeeks.org/cpp-program-to-print-triangle-pattern/
+     * @param startX
+     * @param startY
+     * @param endX
+     * @param endY
+     * @param pixels
+     */
     void drawTriangle(int startX, int startY, int endX, int endY, std::vector<std::vector<Pixel>>& pixels);
 };
 

@@ -7,8 +7,8 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
     , canvas(new Canvas(this))
     , colorPalette(new ColorPalette(this))
-    , stampGallery(new StampGallery())
     , symmetryTool(new SymmetryTool())
+    , stampGallery(new StampGallery())
     , frameManager(new FrameManager())
 {
     ui->setupUi(this);
@@ -19,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent)
     symmetryTool = new SymmetryTool(this);
 
     frameDisplayWindow = ui->frameDisplayWindow;
-    currentTool = penTool;
+    currentTool = nullptr;
 
     animationWindow = ui->animationWindow;
 
@@ -32,7 +32,6 @@ MainWindow::MainWindow(QWidget *parent)
         if (row >= 0 && row < frameManager->getFrames().size()) {
             QImage selectedFrame = frameManager->getFrames().at(row);
             ui->frameDisplayWindow->setFrameImage(selectedFrame);  // Display the frame in frameDisplayWindow
-            ui->frameDisplayWindow->show();  // Make sure the window is visible
         }
     });
 
@@ -60,7 +59,6 @@ MainWindow::~MainWindow()
 void MainWindow::setUpConnections()
 {
     connect(ui->inputButton, &QPushButton::clicked, this, &MainWindow::canvasSizeDialog);
-    connect(ui->slider_fps, &QSlider::valueChanged, this, &MainWindow::updateFPS);
 
     connect(ui->saveButton, &QPushButton::clicked, canvas , &Canvas::saveCanvas);
     connect(ui->openButton, &QPushButton::clicked, canvas , &Canvas::loadCanvas);
@@ -76,6 +74,9 @@ void MainWindow::setUpConnections()
         canvas->setTool(currentTool);
         updateToolButtonHighlight(ui->eraserButton);
     });
+    //*********************************************************************//
+
+    // Color Palette
     connect(ui->colorButton, &QPushButton::clicked, this, &MainWindow::selectPaletteTool);
     connect(this, &MainWindow::setPenColor, canvas, &Canvas::setPenColor);
 
@@ -84,7 +85,7 @@ void MainWindow::setUpConnections()
     connect(colorPalette, &ColorPalette::colorSelected, this, &MainWindow::setPenColor);
     connect(colorPalette, &ColorPalette::colorSelected, this, &MainWindow::setShapeColor);
     connect(colorPalette, &ColorPalette::colorSelected, this, &MainWindow::setSymmetryColor);
-
+    //*********************************************************************//
 
     //Frames buttons
     connect(ui->previewButton, &QPushButton::clicked, this, [&]() {
@@ -98,7 +99,6 @@ void MainWindow::setUpConnections()
 
             // Clear the animationWindow display when preview stops
             animationWindow->displayFrame(QImage());  // Set to an empty QImage to clear display
-            animationWindow->hide();  // Optionally hide the window
         } else {
             // Start the preview and connect frameChanged signal to animationWindow
             frameManager->startPreview();
@@ -106,9 +106,6 @@ void MainWindow::setUpConnections()
 
             // Connect frameChanged signal to animationWindow's displayFrame slot
             connect(frameManager, &FrameManager::frameChanged, animationWindow, &AnimationWindow::displayFrame);
-
-            // Ensure the animationWindow is shown during preview
-            animationWindow->show();
         }
         previewActive = !previewActive;
     });
@@ -163,7 +160,6 @@ void MainWindow::setUpConnections()
             qDebug() << "Invalid deletion index" << frameToDelete;
         }
     });
-
     connect(ui->restoreFrameButton, &QPushButton::clicked, this, [&]() {
         QListWidgetItem *selectedItem = ui->deletedFrameListWidget->currentItem();
         if (selectedItem) {
@@ -200,7 +196,6 @@ void MainWindow::setUpConnections()
             }
         }
     });
-
     connect(ui->deletedFrameListWidget, &QListWidget::itemClicked, this, [&](QListWidgetItem *item) {
         int originalIndex = item->data(Qt::UserRole).toInt();  // Retrieve the original index
         auto deletedFrames = frameManager->getDeletedFrames();
@@ -211,14 +206,11 @@ void MainWindow::setUpConnections()
             }
         }
     });
-
     connect(ui->fpsSlider, &QSlider::valueChanged, [&](int fps) {
         frameManager->setFPS(fps);
         ui->labelFps->setText("FPS: " + QString::number(fps));
     });
-
-
-
+    //*********************************************************************//
 
     //Shape buttons
     QMenu *shapeMenu = new QMenu(this);
@@ -247,6 +239,7 @@ void MainWindow::setUpConnections()
     });
 
     ui->shapeButton->setMenu(shapeMenu);
+    //*********************************************************************//
 
     //StampGallery button
     connect(ui->selectStampButton, &QPushButton::clicked, this, &MainWindow::onSelectStampButtonClicked);
@@ -259,9 +252,12 @@ void MainWindow::setUpConnections()
         }
     });
     connect(ui->loadStampButton, &QPushButton::clicked, [&]() {
-         stampGallery->loadStampsFromResource();
+         stampGallery->loadStamps();
          stampGallery->show();
     });
+    connect(stampGallery, &StampGallery::stampSelected, canvas, &Canvas::setStamp);
+    connect(stampGallery, &StampGallery::stampSelected, this, &MainWindow::updateStampPreview);
+    //*********************************************************************//
 
     //Symmetry button
     connect(ui->parallelButton, &QPushButton::clicked, [&]() {
@@ -269,6 +265,11 @@ void MainWindow::setUpConnections()
         canvas->setTool(currentTool);
         updateToolButtonHighlight(ui->parallelButton);
     });
+
+    connect(canvas, &Canvas::toolCleared, this, [this]() {
+        updateToolButtonHighlight(nullptr);  // Clear button highlights when no tool is active
+    });
+    //*********************************************************************//
 }
 
 void MainWindow::canvasSizeDialog() {
@@ -296,13 +297,6 @@ void MainWindow::updateCanvasDisplay(QPixmap pixmap)
     ui->canvas->setPixmap(pixmap);
 }
 
-void MainWindow::updateFPS()
-{
-    // TODO: Did not implement min,max size for FPS
-    // ...
-    ui->labelFps->setText("FPS: " + QString::number(ui->slider_fps->value()));
-}
-
 void MainWindow::selectPaletteTool()
 {
     colorPalette->openColorDialog();
@@ -311,6 +305,18 @@ void MainWindow::selectPaletteTool()
 void MainWindow::setPenColor(QColor color) {
     penTool->setColor(color);
     ui->labelColor->setStyleSheet(QString("background-color: %1").arg(color.name()));
+}
+
+void MainWindow::setShapeColor(QColor color) {
+    if (shapeTool) {
+        shapeTool->setColor(color);
+    }
+}
+
+void MainWindow::setSymmetryColor(QColor color) {
+    if (symmetryTool) {
+        symmetryTool->setColor(color);
+    }
 }
 
 void MainWindow::selectPenTool() {
@@ -327,18 +333,6 @@ void MainWindow::selectShapeTool() {
     shapeTool->setShapeType("Rectangle");
     currentTool = shapeTool;
      updateCanvasTool();
-}
-
-void MainWindow::setShapeColor(QColor color) {
-    if (shapeTool) {
-        shapeTool->setColor(color);
-    }
-}
-
-void MainWindow::setSymmetryColor(QColor color) {
-    if (symmetryTool) {
-        symmetryTool->setColor(color);
-    }
 }
 
 void MainWindow::updateToolButtonHighlight(QPushButton* selectedButton) {
@@ -362,6 +356,21 @@ void MainWindow::applyStampToCanvas(const QJsonObject& stampJson) {
     int y = cursorPos.y() / 10;
 
     canvas->applyStamp(stampJson, 0, 0);
+}
+
+void MainWindow::updateStampPreview(const QImage &stamp) {
+    if (!stamp.isNull()) {
+        QPixmap pixmap = QPixmap::fromImage(stamp).scaled(
+            ui->stampPreviewLabel->size(),
+            Qt::KeepAspectRatio,
+            Qt::SmoothTransformation
+            );
+
+        ui->stampPreviewLabel->setPixmap(pixmap);
+        ui->stampPreviewLabel->setAlignment(Qt::AlignCenter);  // Ensure it's centered
+    } else {
+        ui->stampPreviewLabel->clear();
+    }
 }
 
 void MainWindow::onSelectStampButtonClicked() {
