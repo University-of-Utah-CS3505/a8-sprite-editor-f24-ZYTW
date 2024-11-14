@@ -41,16 +41,24 @@ public:
 
     QVector<QImage> getFrames();
     QImage getCanvasImage() const;
-    // Stamp Gallery
-    QImage getCurrentSprite();
     int getCanvasSize() const;
 
     void setTool(Tool* tool);
+
+    /**
+     * @brief Get the pixels in current sprite
+     * @return
+     */
+    QImage getCurrentSprite();
     void startSelectingStamp();
     void stopSelectingStamp();
-    std::vector<std::vector<Pixel>> getSelectedPixels() const;
     void applyStamp(const QJsonObject& stampJson, int offsetX, int offsetY);
     void setCurrentStamp(const QJsonObject& stampJson);
+    /**
+     * @brief get the pixle selected when select stamp
+     * @return
+     */
+    std::vector<std::vector<Pixel>> getSelectedPixels() const;
 
 
 signals:
@@ -74,16 +82,18 @@ protected:
     void mouseMoveEvent(QMouseEvent *event) override;
 
 private:
+    // Comman usage
+    void initializePixels();
     Tool* currentTool;
     int canvasSize;
     int framesPerSecond;
     int penSize;
     std::vector<std::vector<Pixel>> pixels;
-    //For shapeTool
+    // For shapeTool
     bool isDragging = false;
     QPoint startPoint;
     QPoint endPoint;
-    //For stampGallery
+    // For stampGallery
     bool selectingStamp = false;
     QPoint selectionStart;
     QPoint selectionEnd;
@@ -91,9 +101,9 @@ private:
     QJsonObject currentStampJson;
     QImage currentStamp;
     QPoint currentStampPosition;
-
-    void initializePixels();
+    // For Filehandler
     FileHandler fileHandler;
+    // Frames
     QVector<QImage> frames;
 };
 

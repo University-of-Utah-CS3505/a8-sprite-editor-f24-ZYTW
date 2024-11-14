@@ -12,6 +12,11 @@
 #include <QString>
 #include <vector>
 #include "Pixel.h"
+#include <QFile>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QColor>
 
 class FileHandler
 {

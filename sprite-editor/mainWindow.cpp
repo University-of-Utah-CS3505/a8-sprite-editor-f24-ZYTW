@@ -8,8 +8,6 @@
  */
 #include "mainWindow.h"
 #include "ui_mainWindow.h"
-#include <QSpinBox>
-#include <QGridLayout>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -68,11 +66,10 @@ MainWindow::~MainWindow()
 void MainWindow::setUpConnections()
 {
     connect(ui->inputButton, &QPushButton::clicked, this, &MainWindow::canvasSizeDialog);
-
     connect(ui->saveButton, &QPushButton::clicked, canvas , &Canvas::saveCanvas);
     connect(ui->openButton, &QPushButton::clicked, canvas , &Canvas::loadCanvas);
 
-    // Tool buttons
+    //Tool buttons//
     connect(ui->penButton, &QPushButton::clicked, [&]() {
         currentTool = penTool;
         canvas->setTool(currentTool);
@@ -85,18 +82,16 @@ void MainWindow::setUpConnections()
     });
     //*********************************************************************//
 
-    // Color Palette
+    //Color Palette//
     connect(ui->colorButton, &QPushButton::clicked, this, &MainWindow::selectPaletteTool);
     connect(this, &MainWindow::setPenColor, canvas, &Canvas::setPenColor);
-
     connect(canvas, &Canvas::updateCanvasDisplay, this, &MainWindow::updateCanvasDisplay);
-
     connect(colorPalette, &ColorPalette::colorSelected, this, &MainWindow::setPenColor);
     connect(colorPalette, &ColorPalette::colorSelected, this, &MainWindow::setShapeColor);
     connect(colorPalette, &ColorPalette::colorSelected, this, &MainWindow::setSymmetryColor);
     //*********************************************************************//
 
-    //Frames buttons
+    //Frames buttons//
     connect(ui->previewButton, &QPushButton::clicked, this, [&]() {
         if (previewActive) {
             // Stop the preview and clear animationWindow
@@ -221,7 +216,7 @@ void MainWindow::setUpConnections()
     });
     //*********************************************************************//
 
-    //Shape buttons
+    //Shape buttons//
     QMenu *shapeMenu = new QMenu(this);
     QAction *rectAction = shapeMenu->addAction("Rectangle");
     QAction *ellipseAction = shapeMenu->addAction("Ellipse");
@@ -232,25 +227,22 @@ void MainWindow::setUpConnections()
         canvas->setTool(currentTool);
         updateToolButtonHighlight(ui->shapeButton);
     });
-
     connect(ellipseAction, &QAction::triggered, [&]() {
         shapeTool->setShapeType("Ellipse");
         currentTool = shapeTool;
         canvas->setTool(currentTool);
         updateToolButtonHighlight(ui->shapeButton);
     });
-
     connect(triangleAction, &QAction::triggered, [&]() {
         shapeTool->setShapeType("Triangle");
         currentTool = shapeTool;
         canvas->setTool(currentTool);
         updateToolButtonHighlight(ui->shapeButton);
     });
-
     ui->shapeButton->setMenu(shapeMenu);
     //*********************************************************************//
 
-    //StampGallery button
+    //StampGallery button//
     connect(ui->selectStampButton, &QPushButton::clicked, this, &MainWindow::onSelectStampButtonClicked);
     connect(ui->saveStampButton, &QPushButton::clicked, [&]() {
         auto selectedPixels = canvas->getSelectedPixels();
@@ -268,7 +260,7 @@ void MainWindow::setUpConnections()
     connect(stampGallery, &StampGallery::stampSelected, this, &MainWindow::updateStampPreview);
     //*********************************************************************//
 
-    //Symmetry button
+    //Symmetry button//
     connect(ui->parallelButton, &QPushButton::clicked, [&]() {
         currentTool = symmetryTool;
         canvas->setTool(currentTool);

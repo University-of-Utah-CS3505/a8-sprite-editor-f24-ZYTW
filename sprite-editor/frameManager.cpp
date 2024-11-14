@@ -7,8 +7,6 @@
  * Reviewer: YINHAO CHEN, ZHENGXI ZHANG
  */
 #include "frameManager.h"
-#include <QImage>
-#include <QDebug>
 
 FrameManager::FrameManager(QObject *parent) : QObject(parent), playbackTimer(new QTimer(this)) {
     connect(playbackTimer, &QTimer::timeout, this, &FrameManager::startPreview);

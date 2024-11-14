@@ -24,6 +24,8 @@
 #include <QDir>
 #include <animationWindow.h>
 #include <frameDisplayWindow.h>
+#include <QSpinBox>
+#include <QGridLayout>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -55,14 +57,16 @@ private slots:
 
 
 public slots:
-    // Connecting spot for all connections between slots and signals
+    /**
+     * @brief  Connecting spot for all connections between slots and signals
+     */
     void setUpConnections();
-    // Popup on first screen to set canvasSize
+    /**
+     * @brief Popup on first screen to set canvasSize
+     */
     void canvasSizeDialog();
     void updateCanvasDisplay(QPixmap pixmap);
-
     void displayFrame(const QImage &frame);
-
     void updateStampPreview(const QImage &stamp);
 
 private:

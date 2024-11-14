@@ -11,6 +11,7 @@
 #include <QList>
 #include <QTimer>
 #include <QImage>
+#include <QDebug>
 
 class FrameManager : public QObject {
     Q_OBJECT

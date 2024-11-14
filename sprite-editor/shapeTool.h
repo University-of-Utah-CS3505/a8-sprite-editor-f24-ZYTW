@@ -12,6 +12,7 @@
 #include "Tool.h"
 #include <QString>
 #include <vector>
+#include <cmath>
 
 class ShapeTool : public Tool {
     Q_OBJECT

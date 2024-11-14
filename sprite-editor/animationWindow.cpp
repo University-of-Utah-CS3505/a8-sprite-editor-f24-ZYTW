@@ -7,7 +7,6 @@
  * Reviewer: YINHAO CHEN
  */
 #include "AnimationWindow.h"
-#include <QPixmap>
 
 AnimationWindow::AnimationWindow(QWidget *parent) : QWidget(parent) {
     // Set up QLabel to display the frames

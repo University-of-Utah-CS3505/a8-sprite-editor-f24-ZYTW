@@ -6,7 +6,7 @@
  *
  * Reviewer: WYNTER KIM, TERESA PARK
  */
-#include "Canvas.h"
+#include "canvas.h"
 #include "symmetryTool.h"
 #include "qjsonobject.h"
 
@@ -62,8 +62,9 @@ void Canvas::setPenColor(QColor color) {
         currentTool->setColor(color);
     }
 }
+//*********************************************************************//
 
-// StampGallery part //
+// StampGallery//
 void Canvas::startSelectingStamp() {
     selectingStamp = true;
     currentTool = nullptr;
@@ -107,7 +108,6 @@ std::vector<std::vector<Pixel>> Canvas::getSelectedPixels() const {
     return selectedPixels;
 }
 
-// Stamp Gallery part
 void Canvas::setCurrentStamp(const QJsonObject& stampJson) {
     currentStampJson = stampJson;
 }
@@ -149,7 +149,7 @@ void Canvas::setStamp(const QImage &stamp) {
 }
 //*********************************************************************//
 
-// FileHandlerPart
+//FileHandler//
 void Canvas::saveCanvas() {
     QString path = QFileDialog::getSaveFileName(this, "Save Canvas", QDir::homePath(), "Sprite Files (*.ssp)");
     if (!path.isEmpty()) {
@@ -167,7 +167,7 @@ void Canvas::loadCanvas() {
 }
 //*********************************************************************//
 
-// MouseEvent and Paint
+//MouseEvent and Paint//
 void Canvas::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
     //painter.fillRect(this->rect(), Qt::white);
@@ -261,4 +261,5 @@ void Canvas::mouseReleaseEvent(QMouseEvent *event) {
     }
     update();
 }
+//*********************************************************************//
 

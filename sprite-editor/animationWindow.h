@@ -13,6 +13,7 @@
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QImage>
+#include <QPixmap>
 
 class AnimationWindow : public QWidget {
     Q_OBJECT
@@ -20,10 +21,14 @@ public:
     explicit AnimationWindow(QWidget *parent = nullptr);
 
 public slots:
-    void displayFrame(const QImage &frame);  // Slot to display each frame
+    /**
+     * @brief Slot to display each frame
+     * @param frame
+     */
+    void displayFrame(const QImage &frame);
 
 private:
-    QLabel *frameLabel;  // QLabel to show the frame
+    QLabel *frameLabel;
 };
 
 #endif // ANIMATIONWINDOW_H

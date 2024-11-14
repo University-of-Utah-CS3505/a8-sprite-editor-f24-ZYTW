@@ -6,12 +6,6 @@
  *
  * Reviewer: WYNTER KIM
  */
-#include <QFile>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonArray>
-#include <QColor>
-
 #include "fileHandler.h"
 
 void FileHandler::saveFile(const QString& path, int framesPerSecond, int canvasSize, const std::vector<std::vector<Pixel>>& pixels) {

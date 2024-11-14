@@ -7,8 +7,6 @@
  * Reviewer: ZHENGXI ZHANG
  */
 #include "shapeTool.h"
-#include <QDebug>
-#include <cmath>
 
 ShapeTool::ShapeTool(QObject* parent, const QString& initialShapeType)
     : Tool(parent), shapeType(initialShapeType) {}
