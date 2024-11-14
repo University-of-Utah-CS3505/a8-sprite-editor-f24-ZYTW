@@ -3,10 +3,9 @@
 
 Canvas::Canvas(QWidget *parent): QWidget(parent), currentTool(nullptr)
 {
-    canvasSize = 30;
+    canvasSize = 0;
     penSize = 3;
     framesPerSecond = 24;
-    setFixedSize(canvasSize * 10, canvasSize * 10);
 
     initializePixels();
 }
@@ -34,7 +33,8 @@ QImage Canvas::getCanvasImage() const {
 
 void Canvas::setCanvasSize(int size) {
     canvasSize = size;
-    setFixedSize(canvasSize * 10, canvasSize * 10);
+    int tileSize = 10;
+    setFixedSize(canvasSize * tileSize, canvasSize * tileSize);
     initializePixels();
     update();
 }
@@ -157,6 +157,9 @@ void Canvas::loadCanvas() {
 // MouseEvent and Paint
 void Canvas::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
+    //??
+    painter.fillRect(this->rect(), Qt::white);
+
     for (int i = 0; i < pixels.size(); ++i) {
         for (int j = 0; j < pixels[i].size(); ++j) {
             painter.setBrush(pixels[i][j].getColor());

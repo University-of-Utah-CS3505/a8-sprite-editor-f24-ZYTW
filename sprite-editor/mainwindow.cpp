@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QSpinBox>
+#include <QGridLayout>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -37,6 +38,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     if (!ui->canvas->layout()) {
         QVBoxLayout *layout = new QVBoxLayout(ui->canvas);
+        layout->setAlignment(Qt::AlignCenter);
         ui->canvas->setLayout(layout);
     }
 
@@ -45,7 +47,6 @@ MainWindow::MainWindow(QWidget *parent)
     canvas->setTool(currentTool);
 
     setUpConnections();
-    updateCanvasDisplay(QPixmap::fromImage(canvas->getCanvasImage().scaled(400,400)));
 }
 
 MainWindow::~MainWindow()
@@ -276,7 +277,7 @@ void MainWindow::canvasSizeDialog() {
     bool ok;
     int userCanvasSize = ui->inputCanvasSize->text().toInt(&ok);
 
-    if (ok && userCanvasSize >= 1 && userCanvasSize <= 64) {
+    if (ok && userCanvasSize >= 1 && userCanvasSize <= 48) {
         canvas->setCanvasSize(userCanvasSize);
 
 
@@ -294,7 +295,9 @@ void MainWindow::canvasSizeDialog() {
 
 void MainWindow::updateCanvasDisplay(QPixmap pixmap)
 {
+    pixmap = pixmap.scaled(ui->canvas->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
     ui->canvas->setPixmap(pixmap);
+    ui->canvas->setAlignment(Qt::AlignCenter);
 }
 
 void MainWindow::selectPaletteTool()
